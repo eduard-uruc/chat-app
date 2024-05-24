@@ -7,46 +7,59 @@ import { twelveHourFormat } from '../../utils/timeFormatUtils'
 import { Container } from '../../styles/Container.styles'
 import { ListItemContainer } from '../../styles/List.styles';
 import { Notification } from '../../styles/Notification.styles';
+import { useSocket } from '../../SocketContext'
 
 const List = ({ items, handleClick, property, hasStatus = false }) => {
+    const { socket, notifications, clearNotifications, setCurrentRecipient } = useSocket()
     const [selectedItem, setSelectedItem] = useState(null)
 
     const handleItemClick = (item) => {
-        console.log('handle click list', item[property])
-
         setSelectedItem(item[property])
         handleClick(item[property])
+        setCurrentRecipient(item[property])
     };
+
+    console.log('notifications ', notifications)
+
+
+    const countMessages = (user, data) => data.filter(item => item.from === user).length
+
 
     return (
         <div>
             <Container position='left'>
-                {items.map((item, index) => (
-                    <ListItemContainer
-                        key={item?._id || index}
-                        onClick={() => handleItemClick(item)}
-                        isSelected={selectedItem === item[property]}
-                    >
+                {items.map((item, index) => {
+                    const count = countMessages(item[property], notifications)
 
-                        <Container position='left' direction="row">
-                            <Status
-                                name={item[property]}
-                                isOnline={item.online}
-                                hasStatus={hasStatus}
-                            />
-                            <ListItem
-                                item={item}
-                                property={property}
-                            />
-                            {/* {twelveHourFormat(new Date())} */}
-                        </Container>
-                        <Container>
-                            <Notification>
-                                3
-                            </Notification>
-                        </Container>
-                    </ListItemContainer>
-                ))}
+                    return (
+                        <ListItemContainer
+                            key={item?._id || index}
+                            onClick={() => handleItemClick(item)}
+                            isSelected={selectedItem === item[property]}
+                        >
+
+                            <Container position='left' direction="row">
+                                <Status
+                                    name={item[property]}
+                                    isOnline={item.online}
+                                    hasStatus={hasStatus}
+                                />
+                                <ListItem
+                                    item={item}
+                                    property={property}
+                                />
+                                {/* {twelveHourFormat(new Date())} */}
+                            </Container>
+                            {!!count && (
+                                <Container>
+                                    <Notification>
+                                        {count}
+                                    </Notification>
+                                </Container>
+                            )}
+                        </ListItemContainer>
+                    )
+                })}
             </Container>
         </div>
     )
