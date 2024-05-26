@@ -13,7 +13,7 @@
    git clone https://github.com/yourusername/chat-app.git
    cd chat-app
 
-2. After installation, start the MongoDB server:
+2.1. After installation, start the MongoDB server:
     # On Windows
     "C:\Program Files\MongoDB\Server\4.4\bin\mongod.exe"
     
@@ -23,20 +23,22 @@
     # On Linux
     sudo systemctl start mongod
 
-3. Set up the backend:
+2.2 Create chat_app database and the following collections: messages, rooms, users
+
+4. Set up the backend:
     cd server
     npm install
 
-4. Set up the frontend:
+5. Set up the frontend:
    cd ../client
    npm install
 
-5. Start the backend server:
+6. Start the backend server:
    Open a terminal window and navigate to the server directory, then start the server:
    cd server
    npm start
 
-6. Start the frontend client:
+7. Start the frontend client:
    Open another terminal window, navigate to the client directory, then start the React application:
    cd client
    npm start
