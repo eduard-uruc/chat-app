@@ -1,63 +1,92 @@
-import React, { useEffect, useState } from 'react'
-import { FaPlus } from 'react-icons/fa'
+import React, { useEffect, useState } from "react"
+import { FaPlus } from "react-icons/fa"
+import { useSelector, useDispatch } from "react-redux"
 
-import List from '../common/List'
-import { getRooms } from '../../services/api'
-import { updateData } from '../../services/fetchData'
-import { Container } from '../../styles/Container.styles'
-import { API_ENDPOINTS } from '../../constants/apiEndpoints'
+import List from "../common/List"
+import { getRooms } from "../../services/api"
+import { updateData } from "../../services/fetchData"
+import { Container } from "../../styles/Container.styles"
+import { API_ENDPOINTS } from "../../constants/apiEndpoints"
+import { SOCKET_EVENTS } from "../../constants/socketEvents"
+import { useSocket } from "../../SocketContext"
 
-const RoomList = ({ handleRoom }) => {
-    const [rooms, setRooms] = useState([])
+import { setRoom } from "../../features/rooms/roomsSlice"
+import {
+  setSelectedUser,
+  setSelectedRecipient,
+} from "../../features/users/usersSlice"
+import { addRoom } from "../../features/rooms/roomsThunks"
+import { current_user } from "../../features/users/usersSelectors"
 
-    const fetchRooms = async () => {
-        const rooms = await getRooms()
-        setRooms(rooms)
+const RoomList = () => {
+  const dispatch = useDispatch()
+  const currentUser = useSelector(current_user)
+  const { socket } = useSocket()
+  const [rooms, setRooms] = useState([])
+
+  const fetchRooms = async () => {
+    const rooms = await getRooms()
+    setRooms(rooms)
+  }
+
+  useEffect(() => {
+    fetchRooms()
+  }, [])
+
+  const joinRoom = (room) => {
+    if (room) {
+      dispatch(setRoom(room))
+      socket && socket.emit(SOCKET_EVENTS.JOIN_ROOM, room)
     }
+  }
+  const handleRoom = (val) => {
+    dispatch(setSelectedRecipient(val))
+    dispatch(setSelectedUser(null))
+    joinRoom(val)
+  }
 
-    useEffect(() => {
-        fetchRooms()
-    }, [])
+  // const handleAddRoom = () => {
+  //   const roomName = prompt("Type a room name")
 
-    const addRoom = async () => {
-        const roomName = prompt("Type a room name")
+  //   if (roomName) {
+  //     dispatch(addRoom({ roomName, currentUser }))
+  //   }
+  // }
 
-        if (roomName) {
-            const roomData = { name: roomName, createdBy: localStorage.getItem('userName') };
+  console.log("ROOMS: ", rooms)
 
-            try {
-                try {
-                    const newRoom = await updateData(API_ENDPOINTS.NEW_ROOM, roomData);
-                    setRooms((prevRooms) => [...prevRooms, newRoom]);
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
+  const handleAddRoom = () => {
+    const roomName = prompt("Type a room name")
+
+    if (roomName) {
+      dispatch(addRoom({ roomName, currentUser }))
+        .then((res) => {
+          // Optionally log or handle post-add actions here
+          console.log("Room added and history refetched", res)
+
+          setRooms([...rooms, res.payload])
+        })
+        .catch((error) => {
+          console.error("Error adding room:", error)
+        })
     }
+  }
 
-    return (
-        <>
-            <Container
-                font={18}
-                direction='row'
-                justify="space-around"
-                style={{ marginBottom: '1em', fontWeight: 500 }}
-                onClick={addRoom}
-            >
-                Create new room <FaPlus />
-            </Container>
+  return (
+    <>
+      <Container
+        font={18}
+        direction="row"
+        justify="space-around"
+        style={{ marginBottom: "1em", fontWeight: 500 }}
+        onClick={handleAddRoom}
+      >
+        Create new room <FaPlus />
+      </Container>
 
-            <List
-                items={rooms}
-                property="name"
-                handleClick={handleRoom}
-            />
-        </>
-
-    )
+      <List items={rooms} property="name" handleClick={handleRoom} />
+    </>
+  )
 }
 
 export default RoomList

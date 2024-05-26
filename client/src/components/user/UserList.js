@@ -1,41 +1,62 @@
-import React, { useState, useEffect } from 'react'
-import { getUsers } from '../../services/api'
-import List from '../common/List'
-import { useSocket } from '../../SocketContext'
+import React, { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
 
-const filteredUser = (data) => data.filter(item => item.userName !== localStorage.getItem('userName'))
+import { getUsers } from "../../services/api"
+import List from "../common/List"
+import { useSocket } from "../../SocketContext"
+import { SOCKET_EVENTS } from "../../constants/socketEvents"
 
-const UserList = ({ handleRecipient }) => {
-    const { socket } = useSocket()
-    const [users, setUsers] = useState([])
+import { setRoom } from "../../features/rooms/roomsSlice"
+import {
+  setSelectedRecipient,
+  setSelectedUser,
+} from "../../features/users/usersSlice"
 
-    const fetchUsers = async () => {
-        const usersData = await getUsers()
-        setUsers(filteredUser(usersData))
+import { current_user } from "../../features/users/usersSelectors"
+
+const filteredUser = (data, currentUser) =>
+  data.filter((item) => item.userName !== currentUser)
+
+const UserList = () => {
+  const dispatch = useDispatch()
+  const { socket } = useSocket()
+  const currentUser = useSelector(current_user)
+
+  const [users, setUsers] = useState([])
+
+  const fetchUsers = async () => {
+    const usersData = await getUsers()
+    setUsers(filteredUser(usersData, currentUser))
+  }
+
+  useEffect(() => {
+    if (socket) {
+      socket.on(SOCKET_EVENTS.NEW_USER_RESPONSE, (data) => {
+        setUsers(filteredUser(data, currentUser))
+      })
+
+      return () => socket.off(SOCKET_EVENTS.NEW_USER_RESPONSE)
     }
+  }, [socket])
 
-    useEffect(() => {
-        if (socket) {
-            socket.on('newUserResponse', (data) => {
-                setUsers(filteredUser(data))
-            })
+  useEffect(() => {
+    fetchUsers()
+  }, [])
 
-            return () => socket.off('newUserResponse')
-        }
-    }, [socket])
+  const handleRecipient = (val) => {
+    dispatch(setRoom(null))
+    dispatch(setSelectedRecipient(val))
+    dispatch(setSelectedUser(val))
+  }
 
-    useEffect(() => {
-        fetchUsers()
-    }, [])
-
-    return (
-        <List
-            items={users}
-            property="userName"
-            handleClick={handleRecipient}
-            hasStatus={true}
-        />
-    )
+  return (
+    <List
+      items={users}
+      property="userName"
+      handleClick={handleRecipient}
+      hasStatus={true}
+    />
+  )
 }
 
 export default UserList

@@ -1,29 +1,37 @@
-import React from 'react'
-import Message from '../common/Message'
+import React from "react"
+import Message from "../common/Message"
+import { useSelector } from "react-redux"
 
-const ChatHistory = ({ messages, typingStatus, lastMessageRef, currentUser, selectedUser }) => {
-    // const headerMessage = currentUser === selectedUser ? 'Your space' : `Chat with ${selectedUser}`
+import { current_user } from "../../features/users/usersSelectors"
+import {
+  selectMessages,
+  selectTypingStatus,
+} from "../../features/messages/messagesSelectors"
 
-    return (
-        <div>
-            {/* <h3>{headerMessage}</h3> */}
-            <>
-                {messages.map((message) =>
-                    <Message
-                        key={message.id}
-                        message={message}
-                        isSender={message.from === currentUser}
-                    />
-                )}
+const ChatHistory = ({ lastMessageRef }) => {
+  const messages = useSelector(selectMessages)
+  const typingStatus = useSelector(selectTypingStatus)
+  const currentUser = useSelector(current_user)
 
-                <div ref={lastMessageRef} />
+  return (
+    <div>
+      <>
+        {messages.map((message) => (
+          <Message
+            key={message.id}
+            message={message}
+            isSender={message.from === currentUser}
+          />
+        ))}
 
-                <div className="message__status">
-                    <p>{typingStatus}</p>
-                </div>
-            </>
+        <div ref={lastMessageRef} />
+
+        <div className="message__status">
+          <p>{typingStatus}</p>
         </div>
-    );
-};
+      </>
+    </div>
+  )
+}
 
 export default ChatHistory

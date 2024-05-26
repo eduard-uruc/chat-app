@@ -1,306 +1,273 @@
-const express = require('express')
-const mongoose = require('mongoose');
-const Message = require('./models/Message');
-const User = require('./models/User');
-const Room = require('./models/Room');
+const express = require("express")
+const mongoose = require("mongoose")
+const Message = require("./models/Message")
+const User = require("./models/User")
+const Room = require("./models/Room")
 const app = express()
-const http = require('http').Server(app)
-const cors = require('cors')
-const io = require('socket.io')(http, {
-    cors: {
-        origin: "http://localhost:3000"
-    }
-});
+const http = require("http").Server(app)
+const cors = require("cors")
+const io = require("socket.io")(http, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+})
 
 const PORT = 4000
 
 let users = []
-let allUsers = []; // All users in current chat room
-let currentRoom = null;
-
+let allUsers = [] // All users in current chat room
+let currentRoom = null
 
 // const MONGO_URI = 'mongodb://localhost/chat_app';
-const MONGO_URI = 'mongodb://127.0.0.1:27017/chat_app';
+const MONGO_URI = "mongodb://127.0.0.1:27017/chat_app"
 
-mongoose.connect(MONGO_URI, {
+mongoose
+  .connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-});
+  })
+  .then(() => {
+    console.log("Connected to MongoDB")
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error)
+  })
 
 app.use(cors())
-app.use(express.json());
+app.use(express.json())
 
+io.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`)
 
-io.on('connection', (socket) => {
-    console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on("identify", async (userName) => {
+    try {
+      let user = await User.findOne({ userName })
+      if (user) {
+        user.socketID = socket.id
+        user.online = true
+      } else {
+        user = new User({ userName, socketID: socket.id, online: true })
+      }
+      await user.save()
+      console.log(
+        "User status updated or new user saved to the database:",
+        user
+      )
 
+      // Fetch all users and emit the updated user list to all clients
+      const allUsers = await User.find()
+      io.emit("newUserResponse", allUsers)
+    } catch (err) {
+      console.error("Error:", err)
+    }
+  })
 
-    socket.on('identify', async (userName) => {
-        try {
-            let user = await User.findOne({ userName });
-            if (user) {
-                user.socketID = socket.id;
-                user.online = true;
-            } else {
-                user = new User({ userName, socketID: socket.id, online: true });
-            }
-            await user.save();
-            console.log('User status updated or new user saved to the database:', user);
+  socket.on("newUser", async (data) => {
+    const { userName, socketID } = data
+    socket.emit("identify", userName)
+  })
 
-            // Fetch all users and emit the updated user list to all clients
-            const allUsers = await User.find();
-            io.emit('newUserResponse', allUsers);
-        } catch (err) {
-            console.error('Error:', err);
-        }
-    });
+  socket.on("typing", async (data) => {
+    const { recipient, message } = data
 
-    socket.on('newUser', async (data) => {
-        const { userName, socketID } = data;
-        socket.emit('identify', userName);
-    });
+    try {
+      // Find the recipient user in the database
+      const recipientUser = await User.findOne({ userName: recipient })
+      if (!recipientUser) {
+        console.error("Recipient user not found.")
+        return
+      }
 
-    // socket.on('newUser', async (data) => {
-    //     try {
-    //         const { userName, socketID } = data;
+      // Emit the typing event to the specified recipient
+      io.to(recipientUser.socketID).emit("typingResponse", message)
+      // socket.broadcast.emit('typingResponse', message);
+    } catch (err) {
+      console.error("Error saving message:", err)
+    }
+  })
 
-    //         // Find the user and update their status or create a new user if not found
-    //         let user = await User.findOne({ userName });
-    //         if (user) {
-    //             user.socketID = socketID;
-    //             user.online = true;
-    //         } else {
-    //             user = new User({ userName, socketID, online: true });
-    //         }
-    //         await user.save();
-    //         console.log('User status updated or new user saved to the database:', user);
+  socket.on("privateMessage", async (data) => {
+    const { message, from, to } = data
 
-    //         // Fetch all users and emit the updated user list to all clients 
-    //         allUsers = await User.find();
-    //         const allTheUsers = await User.find();
+    try {
+      // Find the recipient user in the database
+      const recipientUser = await User.findOne({ userName: to })
+      if (!recipientUser) {
+        console.error("Recipient user not found.")
+        return
+      }
 
-    //         io.emit('newUserResponse', allTheUsers);
+      const newMessage = new Message({ from, to, message })
+      await newMessage.save()
 
+      io.to(recipientUser.socketID).emit("privateMessageResponse", data)
+      io.to(recipientUser.socketID).emit("privateMessageNotification", data)
+    } catch (err) {
+      console.error("Error saving message:", err)
+    }
+  })
 
-    //         // Send the chat history to the connected user
-    //         // const messages = await Message.find({ $or: [{ from: userName }, { to: userName }] }).sort('timestamp').exec();
+  // socket.on('privateMessage', async (data) => {
+  //     const users = await User.find();
+  //     const { message, from, to } = data;
+  //     const recipient = users.find(user => user.userName === to)?.socketID;
+  //     const newMessage = new Message({
+  //         from,
+  //         to,
+  //         message,
+  //     });
 
-    //         // const messages = await Message.find({
-    //         //     $or: [
-    //         //         { from: user1, to: user2 },
-    //         //         { from: user2, to: user1 }
-    //         //     ]
-    //         // }).sort('timestamp').exec();
+  //     try {
+  //         await newMessage.save();
 
+  //         console.log('privateMessageResponse', data);
+  //         console.log('recipient socketID ', recipient);
 
+  //         io.to(recipient).emit('privateMessageResponse', data);
+  //     } catch (err) {
+  //         console.error('Error saving message:', err);
+  //     }
+  // });
 
-    //         // socket.emit('chatHistory', messages);
-    //     } catch (err) {
-    //         console.error('Error:', err);
-    //     }
-    // });
-
-    // socket.on('typing', (data) => socket.broadcast.emit('typingResponse', data.msg));
-    socket.on('typing', (data) => {
-        const { recipient, message } = data
-
-        if (!recipient) {
-            console.error('Recipient socket ID is not provided.');
-            return;
-        }
-
-        // Emit the typing event to the specified recipient
-        // io.to(recipient).emit('typingResponse', message);
-        socket.broadcast.emit('typingResponse', message);
-    });
-
-    socket.on('privateMessage', async (data) => {
-        const { message, from, to } = data;
-
-        try {
-            // Find the recipient user in the database
-            const recipientUser = await User.findOne({ userName: to });
-            if (!recipientUser) {
-                console.error('Recipient user not found.');
-                return;
-            }
-
-            const newMessage = new Message({ from, to, message });
-            await newMessage.save();
-
-            io.to(recipientUser.socketID).emit('privateMessageResponse', data);
-            io.to(recipientUser.socketID).emit('privateMessageNotification', data);
-        } catch (err) {
-            console.error('Error saving message:', err);
-        }
-    });
-
-
-    // socket.on('privateMessage', async (data) => {
-    //     const users = await User.find();
-    //     const { message, from, to } = data;
-    //     const recipient = users.find(user => user.userName === to)?.socketID;
-    //     const newMessage = new Message({
-    //         from,
-    //         to,
-    //         message,
-    //     });
-
-    //     try {
-    //         await newMessage.save();
-
-    //         console.log('privateMessageResponse', data);
-    //         console.log('recipient socketID ', recipient);
-
-
-    //         io.to(recipient).emit('privateMessageResponse', data);
-    //     } catch (err) {
-    //         console.error('Error saving message:', err);
-    //     }
-    // });
-
-
-
-
-    socket.on('room message', async (data) => {
-        const { from, to, room, message } = data;
-        const newMessage = new Message({
-            from: from,
-            to: room,
-            message: message,
-        });
-
-        // newMessage.save()
-        // // io.to(room).emit('room message', newMessage)
-        // socket.broadcast.to(room).emit('room message', newMessage);
-
-
-        try {
-            await newMessage.save()
-            // Broadcast the message to all users in the room except the sender
-            socket.broadcast.to(room).emit('room message', newMessage)
-        } catch (error) {
-            console.error('Error saving message:', error)
-        }
+  socket.on("room message", async (data) => {
+    const { from, to, room, message } = data
+    const newMessage = new Message({
+      from: from,
+      to: room,
+      message: message,
     })
 
+    // newMessage.save()
+    // // io.to(room).emit('room message', newMessage)
+    // socket.broadcast.to(room).emit('room message', newMessage);
 
-    // Join a room
-    socket.on('join room', (newRoom) => {
-        if (currentRoom) {
-            socket.leave(currentRoom); // Leave the current 
-            console.log(`user left "${currentRoom}" room`);
+    try {
+      await newMessage.save()
 
-        }
-        socket.join(newRoom)
-        console.log(`user joined room: ${newRoom}`);
-        currentRoom = newRoom;
+      console.log("emit updated room msg", newMessage)
+      console.log("room ", room)
+      // Broadcast the message to all users in the room except the sender
+      socket.broadcast.to(room).emit("room message", newMessage)
+    } catch (error) {
+      console.error("Error saving message:", error)
+    }
+  })
 
-    });
+  // Join a room
+  socket.on("join room", (newRoom) => {
+    if (currentRoom) {
+      socket.leave(currentRoom) // Leave the current
+      console.log(`user left "${currentRoom}" room`)
+    }
+    socket.join(newRoom)
+    console.log(`user joined room: ${newRoom}`)
+    currentRoom = newRoom
+  })
 
-    // Handle user disconnect
-    socket.on('disconnect', async () => {
-        try {
-            const user = await User.findOneAndUpdate({ socketID: socket.id }, { online: false });
-            if (user) {
-                console.log(`${user.userName} disconnected`);
+  // Handle user disconnect
+  socket.on("disconnect", async () => {
+    try {
+      const user = await User.findOneAndUpdate(
+        { socketID: socket.id },
+        { online: false }
+      )
+      if (user) {
+        console.log(`${user.userName} disconnected`)
 
-                // Fetch all users and emit the updated user list to all clients
-                const allUsers = await User.find();
-                io.emit('newUserResponse', allUsers);
-            }
-        } catch (err) {
-            console.error('Error updating user status on disconnect:', err);
-        }
-    });
-});
+        // Fetch all users and emit the updated user list to all clients
+        const allUsers = await User.find()
+        io.emit("newUserResponse", allUsers)
+      }
+    } catch (err) {
+      console.error("Error updating user status on disconnect:", err)
+    }
+  })
+})
 
-app.get('/api', (req, res) => {
-    res.json({ message: 'Hello world' })
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello world" })
 })
 
 // Endpoint to fetch chat history between two users
-app.get('/api/chat-history', async (req, res) => {
-    const { user1, user2 } = req.query;
+app.get("/api/chat-history", async (req, res) => {
+  const { user1, user2 } = req.query
 
-    if (!user1 || !user2) {
-        return res.status(400).json({ error: 'Both user1 and user2 are required' });
-    }
+  if (!user1 || !user2) {
+    return res.status(400).json({ error: "Both user1 and user2 are required" })
+  }
 
-    try {
-        const messages = await Message.find({
-            $or: [
-                { from: user1, to: user2 },
-                { from: user2, to: user1 }
-            ]
-        }).sort('timestamp').exec();
+  try {
+    const messages = await Message.find({
+      $or: [
+        { from: user1, to: user2 },
+        { from: user2, to: user1 },
+      ],
+    })
+      .sort("timestamp")
+      .exec()
 
-        res.json(messages);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch chat history' });
-    }
-});
+    res.json(messages)
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch chat history" })
+  }
+})
 
-app.get('/api/room-history', async (req, res) => {
-    const { room } = req.query;
+app.get("/api/room-history", async (req, res) => {
+  const { room } = req.query
 
-    if (!room) {
-        return res.status(400).json({ error: 'Room is required' });
-    }
+  if (!room) {
+    return res.status(400).json({ error: "Room is required" })
+  }
 
-    try {
-        const messages = await Message.find({ to: room }).sort('timestamp').exec();
+  try {
+    const messages = await Message.find({ to: room }).sort("timestamp").exec()
 
-        res.json(messages);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch chat history' });
-    }
-});
+    res.json(messages)
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch chat history" })
+  }
+})
 
 // Endpoint to fetch all users
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await User.find();
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
-});
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await User.find()
+    res.json(users)
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" })
+  }
+})
 
 // Endpoint to fetch rooms
-app.get('/api/rooms', async (req, res) => {
-    try {
-        const rooms = await Room.find();
-        res.json(rooms);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch rooms' });
-    }
-});
+app.get("/api/rooms", async (req, res) => {
+  try {
+    const rooms = await Room.find()
+    res.json(rooms)
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch rooms" })
+  }
+})
 
 // Endpoint to create a room
-app.post('/api/newRoom', async (req, res) => {
-    const { name, createdBy } = req.body;
+app.post("/api/newRoom", async (req, res) => {
+  const { name, createdBy } = req.body
 
-    try {
-        let room = await Room.findOne({ name })
+  try {
+    let room = await Room.findOne({ name })
 
-        if (room) {
-            return res.status(400).json({ error: 'Room already exists' })
-        }
-
-        room = new Room({ name, createdBy })
-        await room.save()
-
-        res.status(201).json(room)
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create room' })
+    if (room) {
+      return res.status(400).json({ error: "Room already exists" })
     }
-});
+
+    room = new Room({ name, createdBy })
+    await room.save()
+
+    res.status(201).json(room)
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create room" })
+  }
+})
 
 http.listen(PORT, () => {
-    console.log('app is listening on port ', PORT)
+  console.log("app is listening on port ", PORT)
 })
