@@ -8,6 +8,7 @@ const chatRoutes = require("./routes/chatRoutes")
 const roomRoutes = require("./routes/roomRoutes")
 const socketHandler = require("./utils/socket")
 const config = require("./utils/config")
+const { CONNECTION } = require("./constants/socketEvents")
 
 const app = express()
 const server = http.createServer(app)
@@ -24,7 +25,7 @@ app.use(express.json())
 app.use("/api", chatRoutes)
 app.use("/api", roomRoutes)
 
-io.on("connection", (socket) => {
+io.on(CONNECTION, (socket) => {
   socketHandler(io, socket)
 })
 

@@ -1,12 +1,25 @@
 const User = require("../models/User")
 const Message = require("../models/Message")
+const {
+  IDENTIFY,
+  NEW_USER,
+  TYPING,
+  PRIVATE_MESSAGE,
+  ROOM_MESSAGE,
+  JOIN_ROOM,
+  DISCONNECT,
+  NEW_USER_RESPONSE,
+  TYPING_RESPONSE,
+  PRIVATE_MESSAGE_RESPONSE,
+  PRIVATE_MESSAGE_NOTIFICATION,
+} = require("../constants/socketEvents")
 
 let currentRoom = null
 
 const socketHandler = (io, socket) => {
   console.log(`⚡: ${socket.id} user just connected!`)
 
-  socket.on("identify", async (userName) => {
+  socket.on(IDENTIFY, async (userName) => {
     try {
       let user = await User.findOne({ userName })
       if (user) {
@@ -18,18 +31,18 @@ const socketHandler = (io, socket) => {
       await user.save()
 
       const allUsers = await User.find()
-      io.emit("newUserResponse", allUsers)
+      io.emit(NEW_USER_RESPONSE, allUsers)
     } catch (err) {
       console.error("Error:", err)
     }
   })
 
-  socket.on("newUser", (data) => {
+  socket.on(NEW_USER, (data) => {
     const { userName } = data
-    socket.emit("identify", userName)
+    socket.emit(IDENTIFY, userName)
   })
 
-  socket.on("typing", async (data) => {
+  socket.on(TYPING, async (data) => {
     const { recipient, message } = data
 
     try {
@@ -39,13 +52,13 @@ const socketHandler = (io, socket) => {
         return
       }
 
-      io.to(recipientUser.socketID).emit("typingResponse", message)
+      io.to(recipientUser.socketID).emit(TYPING_RESPONSE, message)
     } catch (err) {
       console.error("Error saving message:", err)
     }
   })
 
-  socket.on("privateMessage", async (data) => {
+  socket.on(PRIVATE_MESSAGE, async (data) => {
     const { message, from, to } = data
 
     try {
@@ -58,26 +71,26 @@ const socketHandler = (io, socket) => {
       const newMessage = new Message({ from, to, message })
       await newMessage.save()
 
-      io.to(recipientUser.socketID).emit("privateMessageResponse", data)
-      io.to(recipientUser.socketID).emit("privateMessageNotification", data)
+      io.to(recipientUser.socketID).emit(PRIVATE_MESSAGE_RESPONSE, data)
+      io.to(recipientUser.socketID).emit(PRIVATE_MESSAGE_NOTIFICATION, data)
     } catch (err) {
       console.error("Error saving message:", err)
     }
   })
 
-  socket.on("room message", async (data) => {
+  socket.on(ROOM_MESSAGE, async (data) => {
     const { from, to, room, message } = data
     const newMessage = new Message({ from, to: room, message })
 
     try {
       await newMessage.save()
-      socket.broadcast.to(to).emit("room message", newMessage)
+      socket.broadcast.to(to).emit(ROOM_MESSAGE, newMessage)
     } catch (error) {
       console.error("Error saving message:", error)
     }
   })
 
-  socket.on("join room", (data) => {
+  socket.on(JOIN_ROOM, (data) => {
     const { room: newRoom, currentUser } = data
 
     if (currentRoom) {
@@ -89,7 +102,7 @@ const socketHandler = (io, socket) => {
     currentRoom = newRoom
   })
 
-  socket.on("disconnect", async () => {
+  socket.on(DISCONNECT, async () => {
     try {
       const user = await User.findOneAndUpdate(
         { socketID: socket.id },
@@ -99,7 +112,7 @@ const socketHandler = (io, socket) => {
         console.log(`${user.userName} disconnected`)
 
         const allUsers = await User.find()
-        io.emit("newUserResponse", allUsers)
+        io.emit(NEW_USER_RESPONSE, allUsers)
       }
     } catch (err) {
       console.error("Error updating user status on disconnect:", err)
