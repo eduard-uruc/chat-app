@@ -37,6 +37,7 @@ app.use(cors())
 app.use(express.json())
 
 io.on("connection", (socket) => {
+  console.log(` `)
   console.log(`⚡: ${socket.id} user just connected!`)
 
   socket.on("identify", async (userName) => {
@@ -49,10 +50,6 @@ io.on("connection", (socket) => {
         user = new User({ userName, socketID: socket.id, online: true })
       }
       await user.save()
-      console.log(
-        "User status updated or new user saved to the database:",
-        user
-      )
 
       // Fetch all users and emit the updated user list to all clients
       const allUsers = await User.find()
@@ -107,28 +104,6 @@ io.on("connection", (socket) => {
     }
   })
 
-  // socket.on('privateMessage', async (data) => {
-  //     const users = await User.find();
-  //     const { message, from, to } = data;
-  //     const recipient = users.find(user => user.userName === to)?.socketID;
-  //     const newMessage = new Message({
-  //         from,
-  //         to,
-  //         message,
-  //     });
-
-  //     try {
-  //         await newMessage.save();
-
-  //         console.log('privateMessageResponse', data);
-  //         console.log('recipient socketID ', recipient);
-
-  //         io.to(recipient).emit('privateMessageResponse', data);
-  //     } catch (err) {
-  //         console.error('Error saving message:', err);
-  //     }
-  // });
-
   socket.on("room message", async (data) => {
     const { from, to, room, message } = data
     const newMessage = new Message({
@@ -137,30 +112,26 @@ io.on("connection", (socket) => {
       message: message,
     })
 
-    // newMessage.save()
-    // // io.to(room).emit('room message', newMessage)
-    // socket.broadcast.to(room).emit('room message', newMessage);
-
     try {
       await newMessage.save()
 
-      console.log("emit updated room msg", newMessage)
-      console.log("room ", room)
       // Broadcast the message to all users in the room except the sender
-      socket.broadcast.to(room).emit("room message", newMessage)
+      socket.broadcast.to(to).emit("room message", newMessage)
     } catch (error) {
       console.error("Error saving message:", error)
     }
   })
 
   // Join a room
-  socket.on("join room", (newRoom) => {
+  socket.on("join room", (data) => {
+    const { room: newRoom, currentUser } = data
+
     if (currentRoom) {
-      socket.leave(currentRoom) // Leave the current
-      console.log(`user left "${currentRoom}" room`)
+      socket.leave(currentRoom)
+      console.log(`user ${currentUser} left "${currentRoom}" room`)
     }
     socket.join(newRoom)
-    console.log(`user joined room: ${newRoom}`)
+    console.log(`user ${currentUser}{${socket.id}} joined room: ${newRoom}`)
     currentRoom = newRoom
   })
 

@@ -13,11 +13,7 @@ import {
 import { addMessage, setTypingStatus } from "../features/messages/messagesSlice"
 
 import { selectMessages } from "../features/messages/messagesSelectors"
-import {
-  current_user,
-  selected_user,
-  selected_recipient,
-} from "../features/users/usersSelectors"
+import { current_user, selected_user } from "../features/users/usersSelectors"
 import { selectedRoom } from "../features/rooms/roomsSelectors"
 
 import { useSocket } from "../SocketContext"
@@ -31,7 +27,6 @@ const ChatPage = () => {
   const messages = useSelector(selectMessages)
   const currentUser = useSelector(current_user)
   const selectedUser = useSelector(selected_user)
-  const recipient = useSelector(selected_recipient)
   const room = useSelector(selectedRoom)
 
   useEffect(() => {
@@ -56,13 +51,23 @@ const ChatPage = () => {
     }
 
     const handleRoomMessage = (data) => {
-      console.log("room mesage socket listener: ", data)
       dispatch(addMessage(data))
     }
 
     const handleTypingResponse = (data) => {
       dispatch(setTypingStatus(data))
     }
+
+    // const filterData = (val, arr, setter, property) => {
+    //   const newItems = arr.filter((item) => item[property] !== val)
+    //   setter(newItems)
+    // }
+
+    // socket.on("privateMessageNotification", (data) => {
+    //   if (data.from !== currentRecipient) {
+    //     setNotifications((prevNotifications) => [...prevNotifications, data])
+    //   }
+    // })
 
     socket.on(
       SOCKET_EVENTS.PRIVATE_MESSAGE_RESPONSE,
@@ -79,7 +84,7 @@ const ChatPage = () => {
       socket.off(SOCKET_EVENTS.ROOM_MESSAGE, handleRoomMessage)
       socket.off(SOCKET_EVENTS.TYPING_RESPONSE, handleTypingResponse)
     }
-  }, [socket, recipient])
+  }, [socket, selectedUser])
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth" })

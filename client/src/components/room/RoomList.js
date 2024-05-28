@@ -4,9 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 
 import List from "../common/List"
 import { getRooms } from "../../services/api"
-import { updateData } from "../../services/fetchData"
 import { Container } from "../../styles/Container.styles"
-import { API_ENDPOINTS } from "../../constants/apiEndpoints"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
 import { useSocket } from "../../SocketContext"
 
@@ -36,7 +34,7 @@ const RoomList = () => {
   const joinRoom = (room) => {
     if (room) {
       dispatch(setRoom(room))
-      socket && socket.emit(SOCKET_EVENTS.JOIN_ROOM, room)
+      socket && socket.emit(SOCKET_EVENTS.JOIN_ROOM, { room, currentUser })
     }
   }
   const handleRoom = (val) => {
@@ -45,25 +43,12 @@ const RoomList = () => {
     joinRoom(val)
   }
 
-  // const handleAddRoom = () => {
-  //   const roomName = prompt("Type a room name")
-
-  //   if (roomName) {
-  //     dispatch(addRoom({ roomName, currentUser }))
-  //   }
-  // }
-
-  console.log("ROOMS: ", rooms)
-
   const handleAddRoom = () => {
     const roomName = prompt("Type a room name")
 
     if (roomName) {
       dispatch(addRoom({ roomName, currentUser }))
         .then((res) => {
-          // Optionally log or handle post-add actions here
-          console.log("Room added and history refetched", res)
-
           setRooms([...rooms, res.payload])
         })
         .catch((error) => {

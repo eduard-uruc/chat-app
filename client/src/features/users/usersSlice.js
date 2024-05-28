@@ -13,7 +13,6 @@ const usersSlice = createSlice({
   initialState,
   reducers: {
     setSelectedUser(state, action) {
-      console.log("selected user action ", action)
       state.selectedUser = action.payload
     },
     setSelectedRecipient(state, action) {

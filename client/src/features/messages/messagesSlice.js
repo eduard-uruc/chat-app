@@ -13,7 +13,6 @@ const messagesSlice = createSlice({
   initialState,
   reducers: {
     addMessage(state, action) {
-      console.log("add msg: ", action.payload)
       state.messages.push(action.payload)
     },
     setTypingStatus(state, action) {
@@ -35,7 +34,6 @@ const messagesSlice = createSlice({
         state.error = action.error.message
       })
       .addCase(addRoom.fulfilled, (state, action) => {
-        console.log("add room thunk: ", action)
         state.messages = action.payload
       })
   },

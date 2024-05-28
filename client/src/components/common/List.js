@@ -10,13 +10,13 @@ import { Notification } from "../../styles/Notification.styles"
 import { useSocket } from "../../SocketContext"
 
 const List = ({ items, handleClick, property, hasStatus = false }) => {
-  const { notifications, setCurrentRecipient } = useSocket()
+  const { notifications, setRecipient } = useSocket()
   const [selectedItem, setSelectedItem] = useState(null)
 
   const handleItemClick = (item) => {
     setSelectedItem(item[property])
     handleClick(item[property])
-    setCurrentRecipient(item[property])
+    setRecipient(item[property])
   }
 
   const countMessages = (user, data) =>
