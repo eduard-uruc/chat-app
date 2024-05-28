@@ -11,6 +11,7 @@ import {
   fetchRoomHistory,
 } from "../features/messages/messagesThunks"
 import { addMessage, setTypingStatus } from "../features/messages/messagesSlice"
+import { addNotification } from "../features/notifications/notificationsSlice"
 
 import { selectMessages } from "../features/messages/messagesSelectors"
 import { current_user, selected_user } from "../features/users/usersSelectors"
@@ -58,16 +59,16 @@ const ChatPage = () => {
       dispatch(setTypingStatus(data))
     }
 
-    // const filterData = (val, arr, setter, property) => {
-    //   const newItems = arr.filter((item) => item[property] !== val)
-    //   setter(newItems)
-    // }
+    const handlePrivateMessageNotification = (data) => {
+      if (data.from !== selectedUser) {
+        dispatch(addNotification(data))
+      }
+    }
 
-    // socket.on("privateMessageNotification", (data) => {
-    //   if (data.from !== currentRecipient) {
-    //     setNotifications((prevNotifications) => [...prevNotifications, data])
-    //   }
-    // })
+    socket.on(
+      SOCKET_EVENTS.PRIVATE_MESSAGE_NOTIFICATION,
+      handlePrivateMessageNotification
+    )
 
     socket.on(
       SOCKET_EVENTS.PRIVATE_MESSAGE_RESPONSE,
@@ -77,6 +78,10 @@ const ChatPage = () => {
     socket.on(SOCKET_EVENTS.TYPING_RESPONSE, handleTypingResponse)
 
     return () => {
+      socket.off(
+        SOCKET_EVENTS.PRIVATE_MESSAGE_NOTIFICATION,
+        handlePrivateMessageNotification
+      )
       socket.off(
         SOCKET_EVENTS.PRIVATE_MESSAGE_RESPONSE,
         handlePrivateMessageResponse

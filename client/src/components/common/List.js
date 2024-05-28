@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useSelector, useDispatch } from "react-redux"
 
 import ListItem from "../common/ListItem"
 import Status from "../common/Status"
@@ -7,16 +8,19 @@ import { twelveHourFormat } from "../../utils/timeFormatUtils"
 import { Container } from "../../styles/Container.styles"
 import { ListItemContainer } from "../../styles/List.styles"
 import { Notification } from "../../styles/Notification.styles"
-import { useSocket } from "../../SocketContext"
+
+import { getNotifications } from "../../features/notifications/notificationsSelectors"
+import { removeNotification } from "../../features/notifications/notificationsSlice"
 
 const List = ({ items, handleClick, property, hasStatus = false }) => {
-  const { notifications, setRecipient } = useSocket()
+  const dispatch = useDispatch()
+  const notifications = useSelector(getNotifications)
   const [selectedItem, setSelectedItem] = useState(null)
 
   const handleItemClick = (item) => {
     setSelectedItem(item[property])
     handleClick(item[property])
-    setRecipient(item[property])
+    dispatch(removeNotification(item[property]))
   }
 
   const countMessages = (user, data) =>

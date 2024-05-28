@@ -16,8 +16,6 @@ const SocketProvider = ({ children }) => {
   const [userName, setUserName] = useState(
     localStorage.getItem("userName") || ""
   )
-  const [notifications, setNotifications] = useState([])
-  const [recipient, setRecipient] = useState(null)
 
   useEffect(() => {
     const newSocket = io(
@@ -49,19 +47,12 @@ const SocketProvider = ({ children }) => {
     }
   }, [userName])
 
-  const clearNotifications = () => {
-    setNotifications([])
-  }
-
   const contextValue = useMemo(
     () => ({
       socket,
       setUserName,
-      notifications,
-      clearNotifications,
-      setRecipient,
     }),
-    [socket, notifications]
+    [socket]
   )
 
   return (
