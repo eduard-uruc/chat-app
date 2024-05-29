@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon src/index.js",
     "seed-users": "node src/database/seeds/usersSeed.js",
     "seed-rooms": "node src/database/seeds/roomsSeed.js",
@@ -21,6 +21,17 @@
     "socket.io": "^4.7.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.1"
+    "jest": "^29.7.0",
+    "mockingoose": "^2.16.2",
+    "nodemon": "^3.1.1",
+    "socket.io-client": "^4.7.5",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "./coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
   }
 }
