@@ -1,47 +1,30 @@
-## Installation
+# Chat Application
+
+A real-time chat application built with Node.js, Express, MongoDB, Socket.IO, and React.
+
+## Overview
+
+This repository contains both the server and client for the Chat Application.
+
+- **Server**: Built with Node.js, Express, and MongoDB.
+- **Client**: Built with React.
+
+## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en/download/) (version 12 or higher)
-- [MongoDB](https://docs.mongodb.com/manual/installation/) (version 4.4 or higher)
+Ensure you have the following installed on your system:
 
-### Step-by-Step Guide
+- Node.js
+- npm (Node Package Manager)
+- MongoDB
 
-1. **Clone the repository:**
+### Installation
+
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/chat-app.git
-   cd chat-app
+   git clone https://github.com/eduard-uruc/chat-app.git
+   ```
 
-2.1. After installation, start the MongoDB server:
-    # On Windows
-    "C:\Program Files\MongoDB\Server\4.4\bin\mongod.exe"
-    
-    # On macOS
-    brew services start mongodb/brew/mongodb-community
-    
-    # On Linux
-    sudo systemctl start mongod
-
-2.2 Create chat_app database and the following collections: messages, rooms, users
-
-4. Set up the backend:
-    cd server
-    npm install
-
-5. Set up the frontend:
-   cd ../client
-   npm install
-
-6. Start the backend server:
-   Open a terminal window and navigate to the server directory, then start the server:
-   cd server
-   npm start
-
-7. Start the frontend client:
-   Open another terminal window, navigate to the client directory, then start the React application:
-   cd client
-   npm start
-
-
-
+2. Follow the setup instructions for both the [server](./server/README.md) and the [client](./client/README.md).

@@ -1,22 +1,17 @@
 const express = require("express")
 const cors = require("cors")
 const http = require("http")
-const socketIO = require("socket.io")
 
-const connectDB = require("./utils/db")
+const connectDB = require("./database/connect")
 const chatRoutes = require("./routes/chatRoutes")
 const roomRoutes = require("./routes/roomRoutes")
-const socketHandler = require("./utils/socket")
-const config = require("./utils/config")
+const setupSocketIO = require("./socket/socket")
+const config = require("./config/config")
 const { CONNECTION } = require("./constants/socketEvents")
+const errorHandler = require("./middlewares/errorHandler")
 
 const app = express()
 const server = http.createServer(app)
-const io = socketIO(server, {
-  cors: {
-    origin: config.CORS_ORIGIN,
-  },
-})
 
 connectDB()
 
@@ -25,9 +20,9 @@ app.use(express.json())
 app.use("/api", chatRoutes)
 app.use("/api", roomRoutes)
 
-io.on(CONNECTION, (socket) => {
-  socketHandler(io, socket)
-})
+app.use(errorHandler)
+
+setupSocketIO(server)
 
 server.listen(config.PORT, () => {
   console.log("App is listening on port", config.PORT)

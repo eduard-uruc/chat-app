@@ -5,7 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/index.js"
+    "start": "nodemon src/index.js",
+    "seed-users": "node src/database/seeds/usersSeed.js",
+    "seed-rooms": "node src/database/seeds/roomsSeed.js",
+    "seed": "npm run seed-users && npm run seed-rooms"
   },
   "keywords": [],
   "author": "",
