@@ -5,7 +5,7 @@ module.exports = (socket) => {
     const { room: newRoom, currentUser } = data
 
     if (socket.currentRoom) {
-      socket.leave(currentRoom)
+      socket.leave(socket.currentRoom)
       console.log(`user ${currentUser} left "${socket.currentRoom}" room`)
     }
     socket.join(newRoom)
