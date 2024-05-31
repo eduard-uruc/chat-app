@@ -1,19 +1,20 @@
 import React, { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 
-import ListItem from "../common/ListItem"
-import Status from "../common/Status"
+import { monthDayFormat } from "../../utils/timeFormatUtils"
+import { capitalizeFirstLetter } from "../../utils/stringUtils"
+import { useTheme } from "../../context/ThemeContext"
 
-import { twelveHourFormat } from "../../utils/timeFormatUtils"
-import { Container } from "../../styles/Container.styles"
-import { ListItemContainer } from "../../styles/List.styles"
-import { Notification } from "../../styles/Notification.styles"
+import Avatar from "./Avatar"
+import { Container } from "../../styles/styled-components/Container.styles"
+import { ChatBarMenuItem } from "../../styles/styled-components/List.styles"
 
 import { getNotifications } from "../../features/notifications/notificationsSelectors"
 import { removeNotification } from "../../features/notifications/notificationsSlice"
 
 const List = ({ items, handleClick, property, hasStatus = false }) => {
   const dispatch = useDispatch()
+  const { theme } = useTheme()
   const notifications = useSelector(getNotifications)
   const [selectedItem, setSelectedItem] = useState(null)
 
@@ -33,26 +34,34 @@ const List = ({ items, handleClick, property, hasStatus = false }) => {
           const count = countMessages(item[property], notifications)
 
           return (
-            <ListItemContainer
+            <ChatBarMenuItem
               key={item?._id || index}
               onClick={() => handleItemClick(item)}
               isSelected={selectedItem === item[property]}
+              theme={theme}
             >
-              <Container position="left" direction="row">
-                <Status
-                  name={item[property]}
-                  isOnline={item.online}
-                  hasStatus={hasStatus}
-                />
-                <ListItem item={item} property={property} />
-                {/* {twelveHourFormat(new Date())} */}
-              </Container>
-              {!!count && (
-                <Container>
-                  <Notification>{count}</Notification>
-                </Container>
-              )}
-            </ListItemContainer>
+              <div class="user-info-container">
+                {
+                  <Avatar
+                    item={item}
+                    hasStatus={hasStatus}
+                    property={property}
+                  />
+                }
+                <div class="user-message-preview">
+                  <span class="user-name">
+                    {capitalizeFirstLetter(item[property])}
+                  </span>
+                  <span class="message-snippet">
+                    Today is I'm very happy cos...
+                  </span>
+                </div>
+              </div>
+              <div class="message-info-container">
+                <span class="message-date"> {monthDayFormat(new Date())}</span>
+                {!!count && <span class="unread-message-count">{count}</span>}
+              </div>
+            </ChatBarMenuItem>
           )
         })}
       </Container>

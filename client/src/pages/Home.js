@@ -19,19 +19,19 @@ const Home = () => {
     navigate("/chat")
   }
   return (
-    <form className="home__container" onSubmit={handleSubmit}>
-      <h2 className="home__header">Sign in to Open Chat</h2>
+    <form className="home-container" onSubmit={handleSubmit}>
+      <h2 className="home-header">Sign in to Open Chat</h2>
       <label htmlFor="username">Username</label>
       <input
         type="text"
         minLength={3}
         name="username"
         id="username"
-        className="username__input"
+        className="username-input"
         value={user}
         onChange={(e) => setUser(e.target.value)}
       />
-      <button className="home__cta">SIGN IN</button>
+      <button className="home-cta">SIGN IN</button>
     </form>
   )
 }

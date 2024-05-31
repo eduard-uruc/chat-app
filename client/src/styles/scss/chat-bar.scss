@@ -1,0 +1,95 @@
+.chat-bar-title {
+  font-size: 15px;
+  padding: 20px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.user-info-container {
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture-status {
+  position: relative;
+  margin-right: 5px;
+}
+
+.profile-picture {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.online-status {
+  position: absolute;
+  bottom: 30px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  background-color: var(--green1);
+  border: 2px solid var(--gray1);
+  border-radius: 50%;
+}
+
+.user-message-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--white1);
+  font-size: 13px;
+}
+
+.message-container {
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  width: 80%;
+  height: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--gray2);
+  outline: none;
+  padding: 15px;
+  background: var(--background-color-dark2);
+  color: var(--white2);
+}
+
+.typing-message {
+  position: fixed;
+  bottom: 50px;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.message-snippet {
+  color: var(--white2);
+  font-size: 11px;
+}
+
+.message-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.message-date {
+  margin-bottom: 10px;
+  color: var(--white1);
+}
+
+.unread-message-count {
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--white);
+}

@@ -5,7 +5,11 @@ const getChatHistory = async (req, res) => {
   const { user1, user2 } = req.query
 
   if (!user1 || !user2) {
-    return res.status(400).json({ error: "Both user1 and user2 are required" })
+    return (
+      res.profile -
+      picture -
+      status(400).json({ error: "Both user1 and user2 are required" })
+    )
   }
 
   try {
@@ -20,7 +24,9 @@ const getChatHistory = async (req, res) => {
 
     res.json(messages)
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch chat history" })
+    res.profile -
+      picture -
+      status(500).json({ error: "Failed to fetch chat history" })
   }
 }
 
@@ -28,14 +34,18 @@ const getRoomHistory = async (req, res) => {
   const { room } = req.query
 
   if (!room) {
-    return res.status(400).json({ error: "Room is required" })
+    return (
+      res.profile - picture - status(400).json({ error: "Room is required" })
+    )
   }
 
   try {
     const messages = await Message.find({ to: room }).sort("timestamp").exec()
     res.json(messages)
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch chat history" })
+    res.profile -
+      picture -
+      status(500).json({ error: "Failed to fetch chat history" })
   }
 }
 
@@ -44,7 +54,7 @@ const getAllUsers = async (req, res) => {
     const users = await User.find()
     res.json(users)
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users" })
+    res.profile - picture - status(500).json({ error: "Failed to fetch users" })
   }
 }
 

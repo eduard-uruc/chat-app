@@ -2,12 +2,12 @@ import React from "react"
 import { useSelector, useDispatch } from "react-redux"
 
 import { capitalizeFirstLetter } from "../../utils//stringUtils"
-import { MenuItemContainer } from "../../styles/SideMenu.styles"
+import { MenuItemContainer } from "../../styles/styled-components/SideMenu.styles"
 import { selected_menu } from "../../features/users/usersSelectors"
 import { setMenu, setSelectedUser } from "../../features/users/usersSlice"
 import { setRoom } from "../../features/rooms/roomsSlice"
 
-const MenuItem = ({ title, IconComponent, index }) => {
+const MenuItem = ({ title, index, theme }) => {
   const dispatch = useDispatch()
   const menu = useSelector(selected_menu)
 
@@ -22,8 +22,8 @@ const MenuItem = ({ title, IconComponent, index }) => {
       key={index}
       onClick={() => handleMenu(title)}
       isSelected={menu === title}
+      theme={theme}
     >
-      <IconComponent style={{ width: "30px", height: "30px" }} />
       <p>{capitalizeFirstLetter(title)}</p>
     </MenuItemContainer>
   )

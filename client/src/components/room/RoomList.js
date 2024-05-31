@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 
 import List from "../common/List"
 import { getRooms } from "../../services/api"
-import { Container } from "../../styles/Container.styles"
+import { Container } from "../../styles/styled-components/Container.styles"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
 import { useSocket } from "../../SocketContext"
 

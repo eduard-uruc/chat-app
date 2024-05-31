@@ -1,10 +1,15 @@
 import React, { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { FaSignOutAlt } from "react-icons/fa"
+import { useNavigate } from "react-router-dom"
 
 import ChatBar from "../components/chat/ChatBar"
-import ChatMenu from "../components/chat/ChatMenu"
 import ChatBody from "../components/chat/ChatBody"
 import ChatFooter from "../components/chat/ChatFooter"
+import { Header } from "../styles/styled-components/Header.styles"
+import { Menu } from "../styles/styled-components/Menu.styles"
+import { Main } from "../styles/styled-components/Main.styles"
+import { Footer } from "../styles/styled-components/Footer.styles"
 
 import {
   fetchChatHistory,
@@ -12,18 +17,20 @@ import {
 } from "../features/messages/messagesThunks"
 import { addMessage, setTypingStatus } from "../features/messages/messagesSlice"
 import { addNotification } from "../features/notifications/notificationsSlice"
-
 import { selectMessages } from "../features/messages/messagesSelectors"
 import { current_user, selected_user } from "../features/users/usersSelectors"
 import { selectedRoom } from "../features/rooms/roomsSelectors"
 
 import { useSocket } from "../SocketContext"
+import { useTheme } from "../context/ThemeContext"
 import { SOCKET_EVENTS } from "../constants/socketEvents"
 
 const ChatPage = () => {
   const dispatch = useDispatch()
   const { socket } = useSocket()
+  const { theme, toggleTheme } = useTheme()
   const lastMessageRef = useRef(null)
+  const navigate = useNavigate()
 
   const messages = useSelector(selectMessages)
   const currentUser = useSelector(current_user)
@@ -95,14 +102,33 @@ const ChatPage = () => {
     lastMessageRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  const handleLeaveChat = () => {
+    localStorage.removeItem("userName")
+    navigate("/")
+    window.location.reload()
+  }
+
   return (
-    <div className="chat">
-      <ChatMenu />
-      <ChatBar />
-      <div className="chat__main">
+    <div class="grid-container">
+      <Header theme={theme}>
+        <div className="header-title">Chats</div>
+        <div className="header-actions">
+          <button className="header-btn" onClick={toggleTheme}>
+            Switch Theme
+          </button>
+
+          <FaSignOutAlt onClick={handleLeaveChat} />
+        </div>
+      </Header>
+      <Menu theme={theme}>
+        <ChatBar />
+      </Menu>
+      <Main theme={theme}>
         <ChatBody lastMessageRef={lastMessageRef} />
+      </Main>
+      <Footer theme={theme}>
         <ChatFooter />
-      </div>
+      </Footer>
     </div>
   )
 }

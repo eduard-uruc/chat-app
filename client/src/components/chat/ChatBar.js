@@ -4,8 +4,9 @@ import { useSelector } from "react-redux"
 import UserList from "../user/UserList"
 import RoomList from "../room/RoomList"
 import { users } from "../../constants/common"
-import { SideBarContainer } from "../../styles/SideBar.styles"
-import { Header } from "../../styles/Common.styles"
+import { SideBarContainer } from "../../styles/styled-components/SideBar.styles"
+
+import ChatMenu from "../../components/chat/ChatMenu"
 
 import { selected_menu } from "../../features/users/usersSelectors"
 
@@ -14,7 +15,22 @@ const ChatBar = () => {
 
   return (
     <SideBarContainer>
-      <Header>Chat</Header>
+      <div className="chat-bar-title">
+        <span> Inbox </span>
+        <span
+          style={{
+            background: "#ff3b3e",
+            fontSize: "11px",
+            padding: "3px",
+            borderRadius: "5px",
+          }}
+        >
+          3 New
+        </span>
+      </div>
+      <div className="chat-bar-title">
+        <ChatMenu />
+      </div>
       <>{menu === users ? <UserList /> : <RoomList />}</>
     </SideBarContainer>
   )

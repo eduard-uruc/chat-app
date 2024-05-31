@@ -26,7 +26,7 @@ const ChatHistory = ({ lastMessageRef }) => {
 
         <div ref={lastMessageRef} />
 
-        <div className="message__status">
+        <div className="typing-message">
           <p>{typingStatus}</p>
         </div>
       </>

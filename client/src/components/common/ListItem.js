@@ -1,7 +1,10 @@
-import React from 'react'
+import React from "react"
+import { capitalizeFirstLetter } from "../../utils/stringUtils"
 
 const ListItem = ({ item, property }) => (
-    <span className='pointer flex-container'>{item[property]}</span>
-);
+  <span className="pointer flex-container">
+    <strong>{capitalizeFirstLetter(item[property])}</strong>
+  </span>
+)
 
-export default ListItem;
+export default ListItem
