@@ -5,6 +5,13 @@
   font-weight: 500;
 }
 
+.chat-bar-notification {
+  background: var(--red1);
+  font-size: 11px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
 .user-info-container {
   display: flex;
   align-items: center;

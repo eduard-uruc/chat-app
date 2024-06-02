@@ -9,25 +9,21 @@ import { SideBarContainer } from "../../styles/styled-components/SideBar.styles"
 import ChatMenu from "../../components/chat/ChatMenu"
 
 import { selected_menu } from "../../features/users/usersSelectors"
+import { getNotifications } from "../../features/notifications/notificationsSelectors"
 
 const ChatBar = () => {
   const menu = useSelector(selected_menu)
+  const notifications = useSelector(getNotifications)
+  const count = notifications?.length
 
   return (
     <SideBarContainer>
-      <div className="chat-bar-title">
-        <span> Inbox </span>
-        <span
-          style={{
-            background: "#ff3b3e",
-            fontSize: "11px",
-            padding: "3px",
-            borderRadius: "5px",
-          }}
-        >
-          3 New
-        </span>
-      </div>
+      {!!count && (
+        <div className="chat-bar-title">
+          <span> Inbox </span>
+          <span className="chat-bar-notification">{count} New</span>
+        </div>
+      )}
       <div className="chat-bar-title">
         <ChatMenu />
       </div>
