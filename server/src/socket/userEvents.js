@@ -13,9 +13,17 @@ module.exports = (io, socket) => {
       let user = await User.findOne({ userName })
       if (user) {
         user.socketID = socket.id
+        user.firstName = "John"
+        user.lastName = "Doe"
         user.online = true
       } else {
-        user = new User({ userName, socketID: socket.id, online: true })
+        user = new User({
+          userName,
+          firstName: "John",
+          lastName: "Doe",
+          socketID: socket.id,
+          online: true,
+        })
       }
       await user.save()
 
