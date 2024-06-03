@@ -1,47 +1,51 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 
-import { getUsers } from "../../services/api"
 import List from "../common/List"
 import { useSocket } from "../../SocketContext"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
+import { userName } from "../../constants/common"
+import { filteredUser } from "../../utils/userUtils"
 
 import { setRoom } from "../../features/rooms/roomsSlice"
 import {
   setSelectedRecipient,
   setSelectedUser,
+  setUsers,
 } from "../../features/users/usersSlice"
-
-import { current_user } from "../../features/users/usersSelectors"
-
-const filteredUser = (data, currentUser) =>
-  data.filter((item) => item.userName !== currentUser)
+import { fetchUsers } from "../../features/users/usersThunks"
+import { getUsers } from "../../features/users/usersSelectors"
 
 const UserList = () => {
   const dispatch = useDispatch()
-  const { socket } = useSocket()
-  const currentUser = useSelector(current_user)
-
-  const [users, setUsers] = useState([])
-
-  const fetchUsers = async () => {
-    const usersData = await getUsers()
-    setUsers(filteredUser(usersData, currentUser))
-  }
+  const { socket, userName: currentUser } = useSocket()
+  const users = useSelector(getUsers)
 
   useEffect(() => {
     if (socket) {
       socket.on(SOCKET_EVENTS.NEW_USER_RESPONSE, (data) => {
-        setUsers(filteredUser(data, currentUser))
+        const filteredUsers = filteredUser(data, currentUser)
+        dispatch(setUsers(filteredUsers))
       })
 
       return () => socket.off(SOCKET_EVENTS.NEW_USER_RESPONSE)
     }
-  }, [socket])
+  }, [socket, dispatch])
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    const fetchAndFilterUsers = async () => {
+      try {
+        const result = await dispatch(fetchUsers()).unwrap()
+        const filteredUsers = await filteredUser(result, currentUser)
+
+        dispatch(setUsers(filteredUsers))
+      } catch (err) {
+        console.error("Failed to fetch users: ", err)
+      }
+    }
+
+    fetchAndFilterUsers()
+  }, [dispatch, currentUser])
 
   const handleRecipient = (val) => {
     dispatch(setRoom(null))
@@ -52,8 +56,8 @@ const UserList = () => {
   return (
     <List
       items={users}
-      property="userName"
-      handleClick={handleRecipient}
+      property={userName}
+      handleRecipient={handleRecipient}
       hasStatus={true}
     />
   )

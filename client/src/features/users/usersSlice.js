@@ -21,10 +21,19 @@ const usersSlice = createSlice({
     setMenu(state, action) {
       state.selectedMenu = action.payload
     },
+    setUsers(state, action) {
+      // console.log("Payload: ", action.payload)
+      state.users = action.payload
+    },
   },
+  // extraReducers: (builder) => {
+  //   builder.addCase(fetchUsers.fulfilled, (state, action) => {
+  //     state.users = action.payload
+  //   })
+  // },
 })
 
-export const { setSelectedUser, setSelectedRecipient, setMenu } =
+export const { setSelectedUser, setSelectedRecipient, setMenu, setUsers } =
   usersSlice.actions
 
 export default usersSlice.reducer

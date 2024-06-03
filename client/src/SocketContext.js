@@ -16,7 +16,6 @@ const SocketProvider = ({ children }) => {
   const [userName, setUserName] = useState(
     localStorage.getItem("userName") || ""
   )
-
   useEffect(() => {
     const newSocket = io(
       process.env.REACT_APP_SOCKET_SERVER_URL || "http://localhost:4000"
@@ -50,6 +49,7 @@ const SocketProvider = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       socket,
+      userName,
       setUserName,
     }),
     [socket]

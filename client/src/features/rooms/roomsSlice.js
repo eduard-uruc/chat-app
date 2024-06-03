@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { addRoom } from "./roomsThunks"
+import { fetchRooms, addRoom } from "./roomsThunks"
 
 const initialState = {
   room: null,
@@ -17,6 +17,12 @@ const roomsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchRooms.fulfilled, (state, action) => {
+        state.rooms = action.payload
+      })
+      .addCase(fetchRooms.rejected, (state, action) => {
+        state.error = action.error.message
+      })
       .addCase(addRoom.fulfilled, (state, action) => {
         state.rooms.push(action.payload)
       })

@@ -1,3 +1,5 @@
 export const primary = "primary"
 export const users = "users"
 export const rooms = "rooms"
+export const name = "name"
+export const userName = "userName"

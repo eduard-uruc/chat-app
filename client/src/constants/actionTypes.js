@@ -1,3 +1,5 @@
 export const FETCH_CHAT_HISTORY = "messages/fetchChatHistory"
 export const FETCH_ROOM_HISTORY = "messages/fetchRoomHistory"
+export const FETCH_USERS = "rooms/fetchUsers"
+export const FETCH_ROOMS = "rooms/fetchRooms"
 export const ADD_ROOM = "rooms/addRoom"

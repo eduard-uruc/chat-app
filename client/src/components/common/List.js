@@ -1,8 +1,9 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 
 import { monthDayFormat } from "../../utils/timeFormatUtils"
 import { capitalizeFirstLetter } from "../../utils/stringUtils"
+import { getDefaultChat, countMessages } from "../../utils/chatUtils"
 import { useTheme } from "../../context/ThemeContext"
 
 import Avatar from "./Avatar"
@@ -11,36 +12,44 @@ import { ChatBarMenuItem } from "../../styles/styled-components/List.styles"
 
 import { getNotifications } from "../../features/notifications/notificationsSelectors"
 import { removeNotification } from "../../features/notifications/notificationsSlice"
+import { useSocket } from "../../SocketContext"
 
-const List = ({ items, handleClick, property, hasStatus = false }) => {
+const List = ({ items, handleRecipient, property, hasStatus = false }) => {
   const dispatch = useDispatch()
   const { theme } = useTheme()
+  const { userName: currentUser } = useSocket()
   const notifications = useSelector(getNotifications)
   const [selectedItem, setSelectedItem] = useState(null)
 
-  const handleItemClick = (item) => {
-    setSelectedItem(item[property])
-    handleClick(item[property])
-    dispatch(removeNotification(item[property]))
+  const handleCurrentChat = (item) => {
+    setSelectedItem(item)
+    handleRecipient(item)
+    dispatch(removeNotification(item))
   }
 
-  const countMessages = (user, data) =>
-    data.filter((item) => item.from === user).length
+  const setDefaultChat = () => {
+    const defaultChat = getDefaultChat(items, property, currentUser)
+    handleCurrentChat(defaultChat)
+  }
+
+  useEffect(() => {
+    setDefaultChat()
+  }, [items, property, currentUser, dispatch])
 
   return (
     <div>
       <Container position="left">
-        {items.map((item, index) => {
+        {items?.map((item, index) => {
           const count = countMessages(item[property], notifications)
 
           return (
             <ChatBarMenuItem
               key={item?._id || index}
-              onClick={() => handleItemClick(item)}
+              onClick={() => handleCurrentChat(item[property])}
               isSelected={selectedItem === item[property]}
               theme={theme}
             >
-              <div class="user-info-container">
+              <div className="user-info-container">
                 {
                   <Avatar
                     item={item}
@@ -48,18 +57,23 @@ const List = ({ items, handleClick, property, hasStatus = false }) => {
                     property={property}
                   />
                 }
-                <div class="user-message-preview">
-                  <span class="user-name">
+                <div className="user-message-preview">
+                  <span className="user-name">
                     {capitalizeFirstLetter(item[property])}
                   </span>
-                  <span class="message-snippet">
+                  <span className="message-snippet">
                     Today is I'm very happy cos...
                   </span>
                 </div>
               </div>
-              <div class="message-info-container">
-                <span class="message-date"> {monthDayFormat(new Date())}</span>
-                {!!count && <span class="unread-message-count">{count}</span>}
+              <div className="message-info-container">
+                <span className="message-date">
+                  {" "}
+                  {monthDayFormat(new Date())}
+                </span>
+                {!!count && (
+                  <span className="unread-message-count">{count}</span>
+                )}
               </div>
             </ChatBarMenuItem>
           )

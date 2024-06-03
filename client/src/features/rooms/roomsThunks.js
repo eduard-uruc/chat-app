@@ -1,8 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { updateData } from "../../services/fetchData"
+import { fetchData, updateData } from "../../services/fetchData"
+import createFetchThunk from "../../services/abstractThunk"
 import { API_ENDPOINTS } from "../../constants/apiEndpoints"
-import { ADD_ROOM } from "../../constants/actionTypes"
+import { FETCH_ROOMS, ADD_ROOM } from "../../constants/actionTypes"
 import { fetchRoomHistory } from "../messages/messagesThunks" // Import the fetch thunk
+
+export const fetchRooms = createFetchThunk(FETCH_ROOMS, () =>
+  fetchData(API_ENDPOINTS.ROOMS)
+)
 
 export const addRoom = createAsyncThunk(
   ADD_ROOM,

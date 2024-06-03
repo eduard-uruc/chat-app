@@ -2,16 +2,16 @@ import React from "react"
 import Message from "../common/Message"
 import { useSelector } from "react-redux"
 
-import { current_user } from "../../features/users/usersSelectors"
 import {
   selectMessages,
   selectTypingStatus,
 } from "../../features/messages/messagesSelectors"
+import { useSocket } from "../../SocketContext"
 
 const ChatHistory = ({ lastMessageRef }) => {
+  const { useerName: currentUser } = useSocket()
   const messages = useSelector(selectMessages)
   const typingStatus = useSelector(selectTypingStatus)
-  const currentUser = useSelector(current_user)
 
   return (
     <div>

@@ -13,13 +13,10 @@ import { WriteMessage } from "../../styles/styled-components/WriteMessage.styles
 import PickerContainer from "../../components/common/PickerContainer"
 
 import { useSocket } from "../../SocketContext"
-import { SOCKET_EVENTS } from "../../constants/socketEvents"
 import { useTheme } from "../../context/ThemeContext"
+import { SOCKET_EVENTS } from "../../constants/socketEvents"
 
-import {
-  current_user,
-  selected_recipient,
-} from "../../features/users/usersSelectors"
+import { selected_recipient } from "../../features/users/usersSelectors"
 import { selectedRoom } from "../../features/rooms/roomsSelectors"
 import { addMessage } from "../../features/messages/messagesSlice"
 
@@ -30,11 +27,12 @@ const ChatFooter = () => {
   const [message, setMessage] = useState("")
   const [isPickerVisible, setPickerVisible] = useState(false)
   const dispatch = useDispatch()
-  const { socket } = useSocket()
+  const { socket, userName } = useSocket()
   const { theme } = useTheme()
-  const currentUser = useSelector(current_user)
   const recipient = useSelector(selected_recipient)
   const room = useSelector(selectedRoom)
+
+  const currentUser = userName
 
   const handleTyping = useCallback(
     debounce((message) => {

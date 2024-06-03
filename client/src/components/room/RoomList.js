@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { FaPlus } from "react-icons/fa"
 import { useSelector, useDispatch } from "react-redux"
 
 import List from "../common/List"
-import { getRooms } from "../../services/api"
 import { Container } from "../../styles/styled-components/Container.styles"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
+import { name } from "../../constants/common"
 import { useSocket } from "../../SocketContext"
 
 import { setRoom } from "../../features/rooms/roomsSlice"
@@ -13,23 +13,17 @@ import {
   setSelectedUser,
   setSelectedRecipient,
 } from "../../features/users/usersSlice"
-import { addRoom } from "../../features/rooms/roomsThunks"
-import { current_user } from "../../features/users/usersSelectors"
+import { fetchRooms, addRoom } from "../../features/rooms/roomsThunks"
+import { getRooms } from "../../features/rooms/roomsSelectors"
 
 const RoomList = () => {
   const dispatch = useDispatch()
-  const currentUser = useSelector(current_user)
-  const { socket } = useSocket()
-  const [rooms, setRooms] = useState([])
-
-  const fetchRooms = async () => {
-    const rooms = await getRooms()
-    setRooms(rooms)
-  }
+  const rooms = useSelector(getRooms)
+  const { socket, userName: currentUser } = useSocket()
 
   useEffect(() => {
-    fetchRooms()
-  }, [])
+    dispatch(fetchRooms())
+  }, [dispatch])
 
   const joinRoom = (room) => {
     if (room) {
@@ -48,12 +42,6 @@ const RoomList = () => {
 
     if (roomName) {
       dispatch(addRoom({ roomName, currentUser }))
-        .then((res) => {
-          setRooms([...rooms, res.payload])
-        })
-        .catch((error) => {
-          console.error("Error adding room:", error)
-        })
     }
   }
 
@@ -63,13 +51,13 @@ const RoomList = () => {
         font={18}
         direction="row"
         justify="space-around"
-        style={{ marginBottom: "1em", fontWeight: 500 }}
+        className="create-room-container"
         onClick={handleAddRoom}
       >
         Create new room <FaPlus />
       </Container>
 
-      <List items={rooms} property="name" handleClick={handleRoom} />
+      <List items={rooms} property={name} handleRecipient={handleRoom} />
     </>
   )
 }
