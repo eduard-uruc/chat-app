@@ -13,8 +13,6 @@ module.exports = (io, socket) => {
       let user = await User.findOne({ userName })
       if (user) {
         user.socketID = socket.id
-        user.firstName = "John"
-        user.lastName = "Doe"
         user.online = true
       } else {
         user = new User({
@@ -35,7 +33,7 @@ module.exports = (io, socket) => {
   })
 
   socket.on(TYPING, async (data) => {
-    const { recipient, message } = data
+    const { recipient, sender, message } = data
 
     try {
       const recipientUser = await User.findOne({ userName: recipient })
@@ -44,7 +42,10 @@ module.exports = (io, socket) => {
         return
       }
 
-      io.to(recipientUser.socketID).emit(TYPING_RESPONSE, message)
+      io.to(recipientUser.socketID).emit(TYPING_RESPONSE, {
+        sender,
+        message,
+      })
     } catch (err) {
       console.error("Error saving message:", err)
     }

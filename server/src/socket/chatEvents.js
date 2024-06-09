@@ -12,17 +12,25 @@ module.exports = (io, socket) => {
     const { message, from, to } = data
 
     try {
-      const recipientUser = await User.findOne({ userName: to })
-      if (!recipientUser) {
+      const fromUser = await User.findOne({ userName: from })
+      const toUser = await User.findOne({ userName: to })
+
+      if (!toUser) {
         console.error("Recipient user not found.")
         return
       }
 
-      const newMessage = new Message({ from, to, message })
+      const newMessage = new Message({
+        from,
+        to,
+        message,
+        fromUser: fromUser._id,
+        toUser: toUser._id,
+      })
       await newMessage.save()
 
-      io.to(recipientUser.socketID).emit(PRIVATE_MESSAGE_RESPONSE, data)
-      io.to(recipientUser.socketID).emit(PRIVATE_MESSAGE_NOTIFICATION, data)
+      io.to(toUser.socketID).emit(PRIVATE_MESSAGE_RESPONSE, data)
+      io.to(toUser.socketID).emit(PRIVATE_MESSAGE_NOTIFICATION, data)
     } catch (err) {
       console.error("Error saving message:", err)
     }

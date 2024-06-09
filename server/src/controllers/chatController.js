@@ -16,9 +16,28 @@ const getChatHistory = async (req, res) => {
       ],
     })
       .sort("timestamp")
+      .populate("fromUser", "firstName lastName userName")
+      .populate("toUser", "firstName lastName userName")
       .exec()
 
-    res.json(messages)
+    const formattedMessages = messages.map((message) => ({
+      _id: message._id,
+      from: message.from,
+      to: message.to,
+      message: message.message,
+      timestamp: message.timestamp,
+      fromUser: {
+        userName: message.fromUser ? message.fromUser.userName : null,
+        firstName: message.fromUser ? message.fromUser.firstName : null,
+        lastName: message.fromUser ? message.fromUser.lastName : null,
+      },
+      toUser: {
+        userName: message.toUser ? message.toUser.userName : null,
+        firstName: message.toUser ? message.toUser.firstName : null,
+        lastName: message.toUser ? message.toUser.lastName : null,
+      },
+    }))
+    res.json(formattedMessages)
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch chat history" })
   }

@@ -8,6 +8,8 @@ const messageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  fromUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  toUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 })
 
 module.exports = mongoose.model("Message", messageSchema)
