@@ -8,8 +8,10 @@ module.exports = (socket) => {
       socket.leave(socket.currentRoom)
       console.log(`user ${currentUser} left "${socket.currentRoom}" room`)
     }
-    socket.join(newRoom)
-    console.log(`user ${currentUser}{${socket.id}} joined room: ${newRoom}`)
-    socket.currentRoom = newRoom
+    socket.join(newRoom?.name)
+    console.log(
+      `user ${currentUser}{${socket.id}} joined room: ${newRoom?.name}`
+    )
+    socket.currentRoom = newRoom?.name
   })
 }

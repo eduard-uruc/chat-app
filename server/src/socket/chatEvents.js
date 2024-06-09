@@ -37,8 +37,8 @@ module.exports = (io, socket) => {
   })
 
   socket.on(ROOM_MESSAGE, async (data) => {
-    const { from, to, room, message } = data
-    const newMessage = new Message({ from, to: room, message })
+    const { from, to, message } = data
+    const newMessage = new Message({ from, to, message })
 
     try {
       await newMessage.save()
