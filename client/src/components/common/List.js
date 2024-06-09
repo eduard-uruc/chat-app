@@ -28,8 +28,6 @@ const List = ({ items, handleRecipient, property }) => {
   const typingStatus = useSelector(selectTypingStatus)
   const [selectedItem, setSelectedItem] = useState(null)
 
-  console.log("list items: ", items)
-
   const handleCurrentChat = (item) => {
     setSelectedItem(item?.name || item?.userName)
     handleRecipient(item)
@@ -38,8 +36,6 @@ const List = ({ items, handleRecipient, property }) => {
 
   const setDefaultChat = () => {
     const defaultChat = getDefaultChat(items, property, currentUser)
-
-    console.log("defaultChat... ", defaultChat)
     handleCurrentChat(defaultChat)
   }
 

@@ -35,6 +35,7 @@ const ChatPage = () => {
   const messages = useSelector(selectMessages)
   const selectedUser = useSelector(getSelectedUser)?.userName
   const room = useSelector(selectedRoom)
+  const roomName = room?.name
 
   useEffect(() => {
     if (currentUser && selectedUser) {
@@ -43,10 +44,10 @@ const ChatPage = () => {
   }, [currentUser, selectedUser, dispatch])
 
   useEffect(() => {
-    if (room) {
-      dispatch(fetchRoomHistory({ room }))
+    if (roomName) {
+      dispatch(fetchRoomHistory({ room: roomName }))
     }
-  }, [room, dispatch])
+  }, [roomName, dispatch])
 
   useEffect(() => {
     if (!socket) return

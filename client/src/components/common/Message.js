@@ -26,7 +26,7 @@ const Message = ({ message, isSender }) => {
           </StyledMessageContent>
         </div>
       ) : (
-        <div className="test2">
+        <div className="message-receiver">
           <StyledAvatar
             alt={`${message?.fromUser?.firstName} ${message?.fromUser?.lastName}`}
             src={null}

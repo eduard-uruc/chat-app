@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import debounce from "lodash/debounce"
+import isEmpty from "lodash/isEmpty"
 import SendIcon from "@mui/icons-material/Send"
 import AttachFileIcon from "@mui/icons-material/AttachFile"
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions"
@@ -33,9 +34,8 @@ const ChatFooter = () => {
   const dispatch = useDispatch()
   const { socket, userName } = useSocket()
   const { theme } = useTheme()
-  const recipient = useSelector(getSelectedRecipient)?.userName
+  const recipient = useSelector(getSelectedRecipient)
   const room = useSelector(selectedRoom)
-
   const currentUser = userName
 
   const handleTyping = useCallback(
@@ -44,7 +44,7 @@ const ChatFooter = () => {
         // to be removed (room condition)
         socket.emit("typing", {
           message,
-          recipient: room ? room : recipient,
+          recipient: !isEmpty(room) ? room?.name : recipient?.userName,
           sender: currentUser,
         })
       }
@@ -52,15 +52,14 @@ const ChatFooter = () => {
     [socket, room, recipient, message]
   )
 
-  const sendMessage = (to, event) => {
+  const sendMessage = (data, event) => {
     if (socket) {
       const newMessage = {
         message,
         from: currentUser,
-        to,
+        to: data?.name || data?.userName,
         id: `${socket.id}${Math.random()}`,
         socketID: socket.id,
-        room,
       }
 
       socket.emit(event, newMessage)
