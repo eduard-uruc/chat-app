@@ -15,6 +15,7 @@
 .user-info-container {
   display: flex;
   align-items: center;
+  color: var(--white1);
 }
 
 .profile-picture-status {
@@ -35,7 +36,6 @@
   width: 10px;
   height: 10px;
   background-color: var(--green1);
-  border: 2px solid var(--gray1);
   border-radius: 50%;
 }
 
@@ -47,7 +47,7 @@
 .user-name {
   font-weight: bold;
   margin-bottom: 5px;
-  color: var(--white1);
+  // color: var(--white1);
   font-size: 13px;
 }
 
@@ -69,11 +69,17 @@
   color: var(--white2);
 }
 
-.typing-message {
-  position: fixed;
-  bottom: 50px;
+.typing-message-footer {
+  color: var(--blue1);
+  position: relative;
+  top: 15px;
   font-size: 13px;
   font-style: italic;
+}
+
+.typing-message-chat-bar {
+  color: var(--blue1);
+  font-weight: 700;
 }
 
 .message-snippet {
@@ -104,4 +110,9 @@
 .create-room-container {
   margin-bottom: 1em;
   font-weight: 500;
+}
+
+.btn-new-room {
+  margin-left: 5px;
+  font-size: 20px !important;
 }

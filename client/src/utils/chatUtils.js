@@ -1,9 +1,8 @@
-import get from "lodash/get"
 import find from "lodash/find"
 
 export const getDefaultChat = (items, property, currentUser) => {
   const userOrRoom = find(items, (item) => item[property] !== currentUser)
-  return get(userOrRoom, property, null)
+  return userOrRoom
 }
 
 export const countMessages = (user, data) =>

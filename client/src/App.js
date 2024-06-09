@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./pages/Home"
 import ChatPage from "./pages/ChatPage"
-import SocketProvider from "./SocketContext"
+import SocketProvider from "./context/SocketContext"
 import ThemeProvider from "./context/ThemeContext"
 
 function App() {

@@ -1,15 +1,13 @@
 import styled from "styled-components"
+import { LIGHT_THEME } from "../../../constants/theme"
 
-export const Header = styled.header`
-  grid-area: header;
+export const StyledFooter = styled.section`
+  grid-area: footer;
   background-color: ${(props) =>
-    props.theme === "light"
+    props.theme === LIGHT_THEME
       ? "var(--background-color-light1)"
       : "var(--background-color-dark2)"};
   border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
 
   color: var(--text-color);
-  overflow-y: auto;
 `

@@ -1,7 +1,7 @@
 import styled from "styled-components"
 
-export const ButtonContainer = styled.button`
-  color: ${(props) => (props.color ? props.color : "var(--blue1)")};
+export const StyledButtonContainer = styled.button`
+  color: ${(props) => (props.color ? `var(--${props.color})` : "var(--blue1)")};
   font-size: 22px;
   margin: 10px 3px 0 0;
   cursor: pointer;
@@ -14,18 +14,18 @@ export const ButtonContainer = styled.button`
   }
 `
 
-export const Form = styled.form`
+export const StyledForm = styled.form`
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
 `
 
-export const FileInput = styled.input`
+export const StyledFileInput = styled.input`
   display: none;
 `
 
-export const FileInputLabel = styled.label`
+export const StyledFileInputLabel = styled.label`
   color: ${(props) => (props.color ? props.color : "var(--blue1)")};
   cursor: pointer;
   display: flex;

@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { LIGHT_THEME } from "../../../constants/theme"
 
 export const SideMenuContainer = styled.div`
   display: flex;
@@ -8,7 +9,7 @@ export const SideMenuContainer = styled.div`
   margin: 0 2px 10px 0;
   color: #607eaa;
   background: ${({ theme }) =>
-    theme === "light" ? "var(--white2)" : "var(--background-color-dark3)"};
+    theme === LIGHT_THEME ? "var(--white2)" : "var(--background-color-dark3)"};
   border-radius: 8px;
 
   img {
@@ -30,13 +31,12 @@ export const MenuItemContainer = styled.div`
   align-items: center;
   background-color: ${({ isSelected, theme }) =>
     isSelected
-      ? theme === "light"
+      ? theme === LIGHT_THEME
         ? "var(--white1)"
         : "var(--background-color-dark1)"
-      : theme === "light"
+      : theme === LIGHT_THEME
       ? "var(--white2)"
       : "var(--background-color-dark2)"};
-
   cursor: pointer;
   width: 70px;
   padding: 0.5em 4em;
@@ -45,6 +45,8 @@ export const MenuItemContainer = styled.div`
 
   &:hover {
     background-color: ${({ theme }) =>
-      theme === "light" ? "var(--white1)" : "var(--background-color-dark1)"};
+      theme === LIGHT_THEME
+        ? "var(--white1)"
+        : "var(--background-color-dark1)"};
   }
 `

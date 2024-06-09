@@ -1,23 +1,24 @@
 import React from "react"
 import { useSelector } from "react-redux"
 
+import { StyledMenu } from "../../styles/styled-components/chat-bar/StyledMenu.styles"
+import ChatMenu from "../../components/chat/ChatMenu"
 import UserList from "../user/UserList"
 import RoomList from "../room/RoomList"
-import { users } from "../../constants/common"
-import { SideBarContainer } from "../../styles/styled-components/SideBar.styles"
 
-import ChatMenu from "../../components/chat/ChatMenu"
-
-import { selected_menu } from "../../features/users/usersSelectors"
+import { getSelectedMenu } from "../../features/users/usersSelectors"
 import { getNotifications } from "../../features/notifications/notificationsSelectors"
+import { users } from "../../constants/common"
+import { useTheme } from "../../context/ThemeContext"
 
 const ChatBar = () => {
-  const menu = useSelector(selected_menu)
+  const { theme } = useTheme()
+  const menu = useSelector(getSelectedMenu)
   const notifications = useSelector(getNotifications)
   const count = notifications?.length
 
   return (
-    <SideBarContainer>
+    <StyledMenu theme={theme}>
       {!!count && (
         <div className="chat-bar-title">
           <span> Inbox </span>
@@ -28,7 +29,7 @@ const ChatBar = () => {
         <ChatMenu />
       </div>
       <>{menu === users ? <UserList /> : <RoomList />}</>
-    </SideBarContainer>
+    </StyledMenu>
   )
 }
 

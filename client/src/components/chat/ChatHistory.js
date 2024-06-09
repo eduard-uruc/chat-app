@@ -2,16 +2,12 @@ import React from "react"
 import Message from "../common/Message"
 import { useSelector } from "react-redux"
 
-import {
-  selectMessages,
-  selectTypingStatus,
-} from "../../features/messages/messagesSelectors"
-import { useSocket } from "../../SocketContext"
+import { selectMessages } from "../../features/messages/messagesSelectors"
+import { useSocket } from "../../context/SocketContext"
 
 const ChatHistory = ({ lastMessageRef }) => {
-  const { useerName: currentUser } = useSocket()
+  const { userName: currentUser } = useSocket()
   const messages = useSelector(selectMessages)
-  const typingStatus = useSelector(selectTypingStatus)
 
   return (
     <div>
@@ -23,12 +19,7 @@ const ChatHistory = ({ lastMessageRef }) => {
             isSender={message.from === currentUser}
           />
         ))}
-
         <div ref={lastMessageRef} />
-
-        <div className="typing-message">
-          <p>{typingStatus}</p>
-        </div>
       </>
     </div>
   )

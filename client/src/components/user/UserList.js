@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 
 import List from "../common/List"
-import { useSocket } from "../../SocketContext"
+import { useSocket } from "../../context/SocketContext"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
 import { userName } from "../../constants/common"
 import { filteredUser } from "../../utils/userUtils"
@@ -54,12 +54,7 @@ const UserList = () => {
   }
 
   return (
-    <List
-      items={users}
-      property={userName}
-      handleRecipient={handleRecipient}
-      hasStatus={true}
-    />
+    <List items={users} property={userName} handleRecipient={handleRecipient} />
   )
 }
 

@@ -2,43 +2,48 @@ import React from "react"
 import moment from "moment"
 
 import {
-  MessageChat,
-  SenderName,
-  RecipientName,
-  MessageContent,
-  MessageText,
-  MessageTimestamp,
-} from "../../styles/styled-components/Message.styles"
-import Avatar from "./Avatar"
+  StyledMessageChat,
+  StyledMessageContent,
+  StyledMessageText,
+  StyledMessageTimestamp,
+} from "../../styles/styled-components/chat-body/StyledMessage.styles"
+import StyledAvatar from "../../styles/styled-components/common/StyledAvatar.styles"
 
-const Message = ({ message, isSender }) => (
-  <MessageChat key={message.id}>
-    {isSender ? (
-      <div className="test1">
-        <MessageContent auto={true}>
-          <MessageText>{message.message}</MessageText>
-          <MessageTimestamp>
-            {moment(message.timestamp).fromNow()}
-          </MessageTimestamp>
-        </MessageContent>
-      </div>
-    ) : (
-      <div className="test2">
-        <Avatar
-          item={{ userName: "Gicu", online: false, profile_picture: true }}
-          hasStatus={false}
-          property={"userName"}
-          size="25px"
-        />
-        <MessageContent>
-          <MessageText>{message.message}</MessageText>
-          <MessageTimestamp>
-            {moment(message.timestamp).fromNow()}
-          </MessageTimestamp>
-        </MessageContent>
-      </div>
-    )}
-  </MessageChat>
-)
+import { useTheme } from "../../context/ThemeContext"
+
+const Message = ({ message, isSender }) => {
+  const { theme } = useTheme()
+
+  return (
+    <StyledMessageChat key={message.id}>
+      {isSender ? (
+        <div>
+          <StyledMessageContent auto={true} theme={theme}>
+            <StyledMessageText>{message.message}</StyledMessageText>
+            <StyledMessageTimestamp>
+              {moment(message.timestamp).fromNow()}
+            </StyledMessageTimestamp>
+          </StyledMessageContent>
+        </div>
+      ) : (
+        <div className="test2">
+          <StyledAvatar
+            alt={`${message?.fromUser?.firstName} ${message?.fromUser?.lastName}`}
+            src={null}
+            styles={{ marginRight: 2 }}
+            size={25}
+          />
+
+          <StyledMessageContent theme={theme}>
+            <StyledMessageText>{message.message}</StyledMessageText>
+            <StyledMessageTimestamp>
+              {moment(message.timestamp).fromNow()}
+            </StyledMessageTimestamp>
+          </StyledMessageContent>
+        </div>
+      )}
+    </StyledMessageChat>
+  )
+}
 
 export default Message

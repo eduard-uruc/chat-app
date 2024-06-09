@@ -5,16 +5,15 @@ export const lightTheme = {
   inputText: "#000000",
   buttonBackground: "#007bff",
   buttonText: "var(--white)",
-  buttonHover: "#0056b3",
+  buttonHover: "var(--blue2)",
 }
 
 export const darkTheme = {
-  // body: "#23262f",
   body: "var(--background-color-dark1)",
   text: "var(--white)",
   inputBackground: "#282828",
   inputText: "#ffffff",
   buttonBackground: "#007bff",
   buttonText: "var(--white)",
-  buttonHover: "#0056b3",
+  buttonHover: "var(--blue2)",
 }

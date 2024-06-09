@@ -1,15 +1,4 @@
-.header-title {
-  padding: 0;
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  font-weight: 700;
-}
-
-.header-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.settings {
   margin: 0 20px;
 }
 
@@ -17,4 +6,16 @@
 .profile-icon {
   margin: 0.7em 1em;
   color: #fff;
+}
+
+.icon-settings {
+  margin-right: 8px;
+  font-size: 18px !important;
+}
+
+.item-settings {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
 }

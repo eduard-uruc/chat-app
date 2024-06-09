@@ -1,30 +1,18 @@
 import React from "react"
-import { FaUsers, FaComments } from "react-icons/fa"
 
 import MenuItem from "./MenuItem"
 import { users, rooms } from "../../constants/common"
-import { SideMenuContainer } from "../../styles/styled-components/SideMenu.styles"
+import { SideMenuContainer } from "../../styles/styled-components/chat-bar/SideMenu.styles"
 import { useTheme } from "../../context/ThemeContext"
 
 const ChatMenu = () => {
   const { theme } = useTheme()
-
-  const data = [
-    { title: users, icon: FaUsers },
-    { title: rooms, icon: FaComments },
-  ]
+  const menuItems = [users, rooms]
 
   return (
     <SideMenuContainer theme={theme}>
-      {data.map((item, index) => {
-        return (
-          <MenuItem
-            key={index}
-            title={item.title}
-            index={index}
-            theme={theme}
-          />
-        )
+      {menuItems.map((item, index) => {
+        return <MenuItem key={index} title={item} index={index} theme={theme} />
       })}
     </SideMenuContainer>
   )

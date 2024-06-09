@@ -2,33 +2,44 @@ import React, { useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 
 import { monthDayFormat } from "../../utils/timeFormatUtils"
-import { capitalizeFirstLetter } from "../../utils/stringUtils"
+import { capitalizedFullString } from "../../utils/stringUtils"
 import { getDefaultChat, countMessages } from "../../utils/chatUtils"
-import { useTheme } from "../../context/ThemeContext"
 
-import Avatar from "./Avatar"
-import { Container } from "../../styles/styled-components/Container.styles"
-import { ChatBarMenuItem } from "../../styles/styled-components/List.styles"
+import { StyledContainer } from "../../styles/styled-components/common/StyledContainer"
+import StyledAvatar from "../../styles/styled-components/common/StyledAvatar.styles"
+import {
+  StyledListItem,
+  StyledMessageDate,
+  StyledMessageSnipet,
+  StyledUsername,
+} from "../../styles/styled-components/chat-bar/StyledList.styles"
 
 import { getNotifications } from "../../features/notifications/notificationsSelectors"
 import { removeNotification } from "../../features/notifications/notificationsSlice"
-import { useSocket } from "../../SocketContext"
+import { selectTypingStatus } from "../../features/messages/messagesSelectors"
+import { useSocket } from "../../context/SocketContext"
+import { useTheme } from "../../context/ThemeContext"
 
-const List = ({ items, handleRecipient, property, hasStatus = false }) => {
+const List = ({ items, handleRecipient, property }) => {
   const dispatch = useDispatch()
   const { theme } = useTheme()
   const { userName: currentUser } = useSocket()
   const notifications = useSelector(getNotifications)
+  const typingStatus = useSelector(selectTypingStatus)
   const [selectedItem, setSelectedItem] = useState(null)
 
+  console.log("list items: ", items)
+
   const handleCurrentChat = (item) => {
-    setSelectedItem(item)
+    setSelectedItem(item?.name || item?.userName)
     handleRecipient(item)
-    dispatch(removeNotification(item))
+    dispatch(removeNotification(item?.userName))
   }
 
   const setDefaultChat = () => {
     const defaultChat = getDefaultChat(items, property, currentUser)
+
+    console.log("defaultChat... ", defaultChat)
     handleCurrentChat(defaultChat)
   }
 
@@ -38,47 +49,58 @@ const List = ({ items, handleRecipient, property, hasStatus = false }) => {
 
   return (
     <div>
-      <Container position="left">
+      <StyledContainer position="left">
         {items?.map((item, index) => {
           const count = countMessages(item[property], notifications)
+          const fullName = item?.name || `${item.firstName} ${item.lastName}`
+          const userName = item?.userName
+          const isTyping =
+            !!typingStatus?.message && userName === typingStatus?.sender
 
           return (
-            <ChatBarMenuItem
+            <StyledListItem
               key={item?._id || index}
-              onClick={() => handleCurrentChat(item[property])}
+              onClick={() => handleCurrentChat(item)}
               isSelected={selectedItem === item[property]}
               theme={theme}
             >
               <div className="user-info-container">
-                {
-                  <Avatar
-                    item={item}
-                    hasStatus={hasStatus}
-                    property={property}
-                  />
-                }
+                <StyledAvatar
+                  alt={fullName}
+                  src={item?.src}
+                  styles={{ marginRight: 2 }}
+                  isOnline={item.online}
+                />
+
                 <div className="user-message-preview">
-                  <span className="user-name">
-                    {capitalizeFirstLetter(item[property])}
-                  </span>
-                  <span className="message-snippet">
-                    Today is I'm very happy cos...
-                  </span>
+                  <StyledUsername theme={theme}>
+                    {capitalizedFullString(fullName)}
+                  </StyledUsername>
+                  <StyledMessageSnipet
+                    theme={theme}
+                    isTyping={!!typingStatus?.message}
+                  >
+                    {isTyping ? (
+                      <span className="typing-message-chat-bar">Typing...</span>
+                    ) : (
+                      "Today is I'm very happy cos..."
+                    )}
+                  </StyledMessageSnipet>
                 </div>
               </div>
               <div className="message-info-container">
-                <span className="message-date">
+                <StyledMessageDate theme={theme}>
                   {" "}
                   {monthDayFormat(new Date())}
-                </span>
+                </StyledMessageDate>
                 {!!count && (
                   <span className="unread-message-count">{count}</span>
                 )}
               </div>
-            </ChatBarMenuItem>
+            </StyledListItem>
           )
         })}
-      </Container>
+      </StyledContainer>
     </div>
   )
 }

@@ -1,12 +1,12 @@
 import React, { useEffect } from "react"
-import { FaPlus } from "react-icons/fa"
+import AddIcon from "@mui/icons-material/Add"
 import { useSelector, useDispatch } from "react-redux"
 
 import List from "../common/List"
-import { Container } from "../../styles/styled-components/Container.styles"
+import { StyledContainer } from "../../styles/styled-components/common/StyledContainer"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
 import { name } from "../../constants/common"
-import { useSocket } from "../../SocketContext"
+import { useSocket } from "../../context/SocketContext"
 
 import { setRoom } from "../../features/rooms/roomsSlice"
 import {
@@ -47,15 +47,15 @@ const RoomList = () => {
 
   return (
     <>
-      <Container
-        font={18}
+      <StyledContainer
+        font={15}
         direction="row"
-        justify="space-around"
+        cursor="pointer"
         className="create-room-container"
         onClick={handleAddRoom}
       >
-        Create new room <FaPlus />
-      </Container>
+        Create new room <AddIcon className="btn-new-room" />
+      </StyledContainer>
 
       <List items={rooms} property={name} handleRecipient={handleRoom} />
     </>

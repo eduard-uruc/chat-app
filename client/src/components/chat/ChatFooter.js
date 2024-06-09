@@ -1,22 +1,26 @@
 import React, { useEffect, useState, useRef, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { FaPaperPlane, FaSmile, FaPaperclip } from "react-icons/fa"
 import debounce from "lodash/debounce"
+import SendIcon from "@mui/icons-material/Send"
+import AttachFileIcon from "@mui/icons-material/AttachFile"
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions"
 
 import {
-  ButtonContainer,
-  Form,
-  FileInput,
-  FileInputLabel,
-} from "../../styles/styled-components/Common.styles"
-import { WriteMessage } from "../../styles/styled-components/WriteMessage.styles"
-import PickerContainer from "../../components/common/PickerContainer"
+  StyledButtonContainer,
+  StyledForm,
+  StyledFileInput,
+  StyledFileInputLabel,
+} from "../../styles/styled-components/common/StyledCommon.styles"
+import { StyledInputMessage } from "../../styles/styled-components/chat-footer/StyledInputMessage.styles"
+import { StyledFooter } from "../../styles/styled-components/chat-footer/StyledFooter.styles"
+import EmojiPicker from "../common/EmojiPicker"
 
-import { useSocket } from "../../SocketContext"
+import { useSocket } from "../../context/SocketContext"
 import { useTheme } from "../../context/ThemeContext"
 import { SOCKET_EVENTS } from "../../constants/socketEvents"
+import { capitalizeFirstLetter } from "../../utils/stringUtils"
 
-import { selected_recipient } from "../../features/users/usersSelectors"
+import { getSelectedRecipient } from "../../features/users/usersSelectors"
 import { selectedRoom } from "../../features/rooms/roomsSelectors"
 import { addMessage } from "../../features/messages/messagesSlice"
 
@@ -29,7 +33,7 @@ const ChatFooter = () => {
   const dispatch = useDispatch()
   const { socket, userName } = useSocket()
   const { theme } = useTheme()
-  const recipient = useSelector(selected_recipient)
+  const recipient = useSelector(getSelectedRecipient)?.userName
   const room = useSelector(selectedRoom)
 
   const currentUser = userName
@@ -41,10 +45,11 @@ const ChatFooter = () => {
         socket.emit("typing", {
           message,
           recipient: room ? room : recipient,
+          sender: currentUser,
         })
       }
     }, 300),
-    [socket, room, recipient]
+    [socket, room, recipient, message]
   )
 
   const sendMessage = (to, event) => {
@@ -79,7 +84,6 @@ const ChatFooter = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0]
-    console.log("File selected:", file)
   }
 
   const onEmojiClick = (event, emojiObject) => {
@@ -116,42 +120,46 @@ const ChatFooter = () => {
   }, [isPickerVisible])
 
   return (
-    <Form onSubmit={handleSendMessage}>
-      <WriteMessage
-        ref={inputRef}
-        theme={theme}
-        type="text"
-        placeholder="Write message"
-        value={message}
-        onChange={handleMessageChange}
-        onKeyDown={() => handleTyping(`${currentUser} is typing`)}
-        onKeyUp={() => handleTyping("")}
-      />
-      <ButtonContainer type="submit">
-        <FaPaperPlane />
-      </ButtonContainer>
-      <ButtonContainer
-        color="yellow"
-        type="button"
-        onClick={() => setPickerVisible(!isPickerVisible)}
-      >
-        <FaSmile />
-      </ButtonContainer>
-      <FileInputLabel htmlFor="file-upload">
-        <FaPaperclip />
-      </FileInputLabel>
-      <FileInput
-        id="file-upload"
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-      />
-      {isPickerVisible && (
-        <div ref={pickerRef} className="emoji-picker-container">
-          <PickerContainer onEmojiClick={onEmojiClick} />
-        </div>
-      )}
-    </Form>
+    <StyledFooter theme={theme}>
+      <StyledForm onSubmit={handleSendMessage}>
+        <StyledInputMessage
+          ref={inputRef}
+          theme={theme}
+          type="text"
+          placeholder="Write message"
+          value={message}
+          onChange={handleMessageChange}
+          onKeyDown={() =>
+            handleTyping(`${capitalizeFirstLetter(currentUser)} is typing...`)
+          }
+          onKeyUp={() => handleTyping("")}
+        />
+        <StyledButtonContainer type="submit">
+          <SendIcon />
+        </StyledButtonContainer>
+        <StyledButtonContainer
+          color="yellow1"
+          type="button"
+          onClick={() => setPickerVisible(!isPickerVisible)}
+        >
+          <EmojiEmotionsIcon />
+        </StyledButtonContainer>
+        <StyledFileInputLabel htmlFor="file-upload">
+          <AttachFileIcon />
+        </StyledFileInputLabel>
+        <StyledFileInput
+          id="file-upload"
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+        />
+        {isPickerVisible && (
+          <div ref={pickerRef} className="emoji-picker-container">
+            <EmojiPicker onEmojiClick={onEmojiClick} />
+          </div>
+        )}
+      </StyledForm>
+    </StyledFooter>
   )
 }
 

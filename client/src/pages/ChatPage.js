@@ -1,16 +1,15 @@
 import React, { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { FaSignOutAlt, FaUser } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 
+import Settings from "../components/chat/Settings"
 import ChatBar from "../components/chat/ChatBar"
 import ChatBody from "../components/chat/ChatBody"
 import ChatFooter from "../components/chat/ChatFooter"
-import ProfileDefault from "../components/common/ProfileDefault"
-import { Header } from "../styles/styled-components/Header.styles"
-import { Menu } from "../styles/styled-components/Menu.styles"
-import { Main } from "../styles/styled-components/Main.styles"
-import { Footer } from "../styles/styled-components/Footer.styles"
+import {
+  StyledHeader,
+  StyledHeaderTitle,
+} from "../styles/styled-components/chat-header/StyledHeader.styles"
 
 import {
   fetchChatHistory,
@@ -19,10 +18,10 @@ import {
 import { addMessage, setTypingStatus } from "../features/messages/messagesSlice"
 import { addNotification } from "../features/notifications/notificationsSlice"
 import { selectMessages } from "../features/messages/messagesSelectors"
-import { selected_user } from "../features/users/usersSelectors"
+import { getSelectedUser } from "../features/users/usersSelectors"
 import { selectedRoom } from "../features/rooms/roomsSelectors"
 
-import { useSocket } from "../SocketContext"
+import { useSocket } from "../context/SocketContext"
 import { useTheme } from "../context/ThemeContext"
 import { SOCKET_EVENTS } from "../constants/socketEvents"
 
@@ -34,7 +33,7 @@ const ChatPage = () => {
   const navigate = useNavigate()
 
   const messages = useSelector(selectMessages)
-  const selectedUser = useSelector(selected_user)
+  const selectedUser = useSelector(getSelectedUser)?.userName
   const room = useSelector(selectedRoom)
 
   useEffect(() => {
@@ -108,27 +107,22 @@ const ChatPage = () => {
     window.location.reload()
   }
 
+  const userDetails = { fullName: currentUser, avatar: "" }
+
   return (
     <div class="grid-container">
-      <Header theme={theme}>
-        <div className="header-title">Chats</div>
-        <div className="header-actions">
-          <button className="header-btn" onClick={toggleTheme}>
-            Switch Theme
-          </button>
-          <ProfileDefault name={currentUser} />
-          <FaSignOutAlt onClick={handleLeaveChat} />
-        </div>
-      </Header>
-      <Menu theme={theme}>
-        <ChatBar />
-      </Menu>
-      <Main theme={theme}>
-        <ChatBody lastMessageRef={lastMessageRef} />
-      </Main>
-      <Footer theme={theme}>
-        <ChatFooter />
-      </Footer>
+      <StyledHeader theme={theme}>
+        <StyledHeaderTitle theme={theme}>Chats</StyledHeaderTitle>
+        <Settings
+          user={userDetails}
+          toggleTheme={toggleTheme}
+          logout={handleLeaveChat}
+          theme={theme}
+        />
+      </StyledHeader>
+      <ChatBar />
+      <ChatBody lastMessageRef={lastMessageRef} />
+      <ChatFooter />
     </div>
   )
 }
