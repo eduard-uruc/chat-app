@@ -1,8 +1,11 @@
 const Room = require("../models/Room")
+const {
+  getRoomWithLastMessageAggregation,
+} = require("../utils/roomAggregations")
 
 const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find()
+    const rooms = await Room.aggregate(getRoomWithLastMessageAggregation())
     res.json(rooms)
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch rooms" })
