@@ -4,7 +4,7 @@ import { LIGHT_THEME } from "../../../constants/theme"
 export const StyledListItem = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 10px;
   border-radius: ${({ isSelected }) =>
     isSelected ? "20px 0 20px 20px" : "8px 0 8px 8px"};

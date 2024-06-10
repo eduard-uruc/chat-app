@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { monthDayFormat } from "../../utils/timeFormatUtils"
 import { capitalizedFullString } from "../../utils/stringUtils"
 import { getDefaultChat, countMessages } from "../../utils/chatUtils"
+import { shortenMessage } from "../../utils/shortenString"
 
 import { StyledContainer } from "../../styles/styled-components/common/StyledContainer"
 import StyledAvatar from "../../styles/styled-components/common/StyledAvatar.styles"
@@ -52,6 +53,7 @@ const List = ({ items, handleRecipient, property }) => {
           const userName = item?.userName
           const isTyping =
             !!typingStatus?.message && userName === typingStatus?.sender
+          const lastMessage = shortenMessage(item?.lastMessage)
 
           return (
             <StyledListItem
@@ -63,7 +65,8 @@ const List = ({ items, handleRecipient, property }) => {
               <div className="user-info-container">
                 <StyledAvatar
                   alt={fullName}
-                  src={item?.src}
+                  src={" "}
+                  // src={item?.src}
                   styles={{ marginRight: 2 }}
                   isOnline={item.online}
                 />
@@ -79,7 +82,7 @@ const List = ({ items, handleRecipient, property }) => {
                     {isTyping ? (
                       <span className="typing-message-chat-bar">Typing...</span>
                     ) : (
-                      "Today is I'm very happy cos..."
+                      lastMessage
                     )}
                   </StyledMessageSnipet>
                 </div>
@@ -87,7 +90,7 @@ const List = ({ items, handleRecipient, property }) => {
               <div className="message-info-container">
                 <StyledMessageDate theme={theme}>
                   {" "}
-                  {monthDayFormat(new Date())}
+                  {monthDayFormat(item?.lastMessageTimestamp)}
                 </StyledMessageDate>
                 {!!count && (
                   <span className="unread-message-count">{count}</span>
