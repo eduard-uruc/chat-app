@@ -35,7 +35,7 @@ const UserList = () => {
   useEffect(() => {
     const fetchAndFilterUsers = async () => {
       try {
-        const result = await dispatch(fetchUsers()).unwrap()
+        const result = await dispatch(fetchUsers({ currentUser })).unwrap()
         const filteredUsers = await filteredUser(result, currentUser)
 
         dispatch(setUsers(filteredUsers))
@@ -43,7 +43,6 @@ const UserList = () => {
         console.error("Failed to fetch users: ", err)
       }
     }
-
     fetchAndFilterUsers()
   }, [dispatch, currentUser])
 
