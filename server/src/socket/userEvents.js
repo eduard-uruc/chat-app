@@ -6,14 +6,21 @@ const {
   TYPING,
   TYPING_RESPONSE,
 } = require("../constants/socketEvents")
+const {
+  getUserWithLastMessage,
+  getUserWithLastMessageAggregation,
+} = require("../utils/userAggregations")
 
 module.exports = (io, socket) => {
   socket.on(IDENTIFY, async (userName) => {
     try {
-      let user = await User.findOne({ userName })
+      let user = await getUserWithLastMessage(null, { userName })
+
       if (user) {
-        user.socketID = socket.id
-        user.online = true
+        await User.findByIdAndUpdate(user._id, {
+          socketID: socket.id,
+          online: true,
+        })
       } else {
         user = new User({
           userName,
@@ -22,10 +29,14 @@ module.exports = (io, socket) => {
           socketID: socket.id,
           online: true,
         })
-      }
-      await user.save()
 
-      const allUsers = await User.find()
+        await user.save()
+      }
+
+      const allUsers = await User.aggregate(
+        getUserWithLastMessageAggregation(user._id)
+      )
+
       io.emit(NEW_USER_RESPONSE, allUsers)
     } catch (err) {
       console.error("Error:", err)
@@ -36,7 +47,10 @@ module.exports = (io, socket) => {
     const { recipient, sender, message } = data
 
     try {
-      const recipientUser = await User.findOne({ userName: recipient })
+      const recipientUser = await getUserWithLastMessage({
+        userName: recipient,
+      })
+
       if (!recipientUser) {
         console.error("Recipient user not found.")
         return
@@ -60,7 +74,10 @@ module.exports = (io, socket) => {
       if (user) {
         console.log(`${user.userName} disconnected`)
 
-        const allUsers = await User.find()
+        const allUsers = await User.aggregate(
+          getUserWithLastMessageAggregation()
+        )
+
         io.emit(NEW_USER_RESPONSE, allUsers)
       }
     } catch (err) {
