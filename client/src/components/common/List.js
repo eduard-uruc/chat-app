@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { monthDayFormat } from "../../utils/timeFormatUtils"
 import { capitalizedFullString } from "../../utils/stringUtils"
 import { getDefaultChat, countMessages } from "../../utils/chatUtils"
-import { shortenMessage } from "../../utils/shortenString"
+import { shortenMessage } from "../../utils/shortenStringUtils"
 
 import { StyledContainer } from "../../styles/styled-components/common/StyledContainer"
 import StyledAvatar from "../../styles/styled-components/common/StyledAvatar.styles"

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import moment from "moment"
 
 import {
@@ -8,22 +8,33 @@ import {
   StyledMessageTimestamp,
 } from "../../styles/styled-components/chat-body/StyledMessage.styles"
 import StyledAvatar from "../../styles/styled-components/common/StyledAvatar.styles"
+import FileDisplay from "./FileDisplay"
 
 import { useTheme } from "../../context/ThemeContext"
 
 const Message = ({ message, isSender }) => {
   const { theme } = useTheme()
+  const file = message?.files?.[0]
 
   return (
     <StyledMessageChat key={message.id}>
       {isSender ? (
-        <div>
-          <StyledMessageContent auto={true} theme={theme}>
-            <StyledMessageText>{message.message}</StyledMessageText>
-            <StyledMessageTimestamp>
-              {moment(message.timestamp).fromNow()}
-            </StyledMessageTimestamp>
-          </StyledMessageContent>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+            }}
+          >
+            <FileDisplay file={file} className="right" />
+            <StyledMessageContent auto={true} theme={theme}>
+              <StyledMessageText>{message.message}</StyledMessageText>
+              <StyledMessageTimestamp>
+                {moment(message.timestamp).fromNow()}
+              </StyledMessageTimestamp>
+            </StyledMessageContent>
+          </div>
         </div>
       ) : (
         <div className="message-receiver">
@@ -34,12 +45,15 @@ const Message = ({ message, isSender }) => {
             size={25}
           />
 
-          <StyledMessageContent theme={theme}>
-            <StyledMessageText>{message.message}</StyledMessageText>
-            <StyledMessageTimestamp>
-              {moment(message.timestamp).fromNow()}
-            </StyledMessageTimestamp>
-          </StyledMessageContent>
+          <div>
+            <FileDisplay file={file} className="left" />
+            <StyledMessageContent theme={theme}>
+              <StyledMessageText>{message.message}</StyledMessageText>
+              <StyledMessageTimestamp>
+                {moment(message.timestamp).fromNow()}
+              </StyledMessageTimestamp>
+            </StyledMessageContent>
+          </div>
         </div>
       )}
     </StyledMessageChat>

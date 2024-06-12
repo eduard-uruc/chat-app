@@ -9,7 +9,7 @@ import {
   StyledMenuItem,
 } from "../../styles/styled-components/chat-bar/MuiMenu.styles"
 import StyledAvatar from "../../styles/styled-components/common/StyledAvatar.styles"
-import getSettings from "../../utils/settingsConfig"
+import getSettings from "../../utils/settingsConfigUtils"
 import { OPEN_SETTINGS } from "../../constants/settings"
 
 const Settings = ({ user, toggleTheme, logout, theme }) => {
