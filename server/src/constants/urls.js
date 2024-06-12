@@ -4,4 +4,5 @@ module.exports = {
   USERS: "/users",
   ROOMS: "/rooms",
   NEW_ROOM: "/newRoom",
+  UPLOAD: "/upload",
 }

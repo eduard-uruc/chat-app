@@ -10,7 +10,7 @@ const {
 
 module.exports = (io, socket) => {
   socket.on(PRIVATE_MESSAGE, async (data) => {
-    const { message, from, to } = data
+    const { message, from, to, files } = data
 
     try {
       const fromUser = await User.findOne({ userName: from })
@@ -21,14 +21,14 @@ module.exports = (io, socket) => {
         return
       }
 
-      const newMessage = new Message({
-        from,
-        to,
-        message,
-        fromUser: fromUser._id,
-        toUser: toUser._id,
-      })
-      await newMessage.save()
+      // const newMessage = new Message({
+      //   from,
+      //   to,
+      //   message,
+      //   fromUser: fromUser._id,
+      //   toUser: toUser._id,
+      // })
+      // await newMessage.save()
 
       const formattedMessage = {
         from,
@@ -44,6 +44,7 @@ module.exports = (io, socket) => {
           firstName: toUser.firstName || null,
           lastName: toUser.lastName || null,
         },
+        files,
       }
 
       io.to(toUser.socketID).emit(PRIVATE_MESSAGE_RESPONSE, formattedMessage)

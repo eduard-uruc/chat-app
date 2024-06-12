@@ -11,6 +11,7 @@ const messageSchema = new mongoose.Schema({
   fromUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   toUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   toRoom: { type: mongoose.Schema.Types.ObjectId, ref: "Room" },
+  files: [{ type: mongoose.Schema.Types.ObjectId, ref: "File" }],
 })
 
 module.exports = mongoose.model("Message", messageSchema)
