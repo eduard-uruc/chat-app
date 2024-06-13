@@ -8,7 +8,7 @@ const uploadFile = async (req, res) => {
     const file = req.file
     let formattedMessage = {}
 
-    if (!from || !to || !message) {
+    if (!from || !to) {
       return res.status(400).send({ error: "Missing required fields" })
     }
 
@@ -54,8 +54,6 @@ const uploadFile = async (req, res) => {
           },
         ],
       }
-
-      console.log("formattedMessage: ", formattedMessage)
     }
 
     res.status(201).send(formattedMessage)
