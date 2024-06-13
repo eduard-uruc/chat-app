@@ -2,9 +2,10 @@ import React from "react"
 import Avatar from "@mui/material/Avatar"
 import Badge from "@mui/material/Badge"
 import { styled } from "@mui/material/styles"
-import user1 from "assets/avatar/user1.jpg"
-import user2 from "assets/avatar/user2.jpg"
 import { getRandomColor } from "../../../utils/colorUtils"
+
+const user1 = "/assets/avatar/user1.jpg"
+const user2 = "/assets/avatar/user2.jpg"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
