@@ -1,6 +1,6 @@
 const fetchData = async (endpoint, params = {}) => {
   const queryString = new URLSearchParams(params).toString()
-  const baseUrl = process.env.REACT_APP_API_URL
+  const baseUrl = import.meta.env.VITE_APP_API_URL
   const url = `${baseUrl}/${endpoint}${queryString ? `?${queryString}` : ""}`
 
   try {
@@ -20,7 +20,7 @@ const fetchData = async (endpoint, params = {}) => {
 }
 
 const updateData = async (endpoint, body = {}) => {
-  const baseUrl = process.env.REACT_APP_API_URL
+  const baseUrl = import.meta.env.VITE_APP_API_URL
   const url = `${baseUrl}/${endpoint}`
 
   try {

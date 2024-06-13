@@ -17,9 +17,7 @@ const SocketProvider = ({ children }) => {
     localStorage.getItem("userName") || ""
   )
   useEffect(() => {
-    const newSocket = io(
-      process.env.REACT_APP_SOCKET_SERVER_URL || "http://localhost:4000"
-    )
+    const newSocket = io(import.meta.env.VITE_APP_SOCKET_SERVER_URL)
 
     newSocket.on("connect", () => {
       console.log("Socket connected:", newSocket.id)
