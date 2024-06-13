@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 @import "colors";
+@import "text-colors";
 @import "home";
 @import "header";
 @import "chat-bar";
@@ -43,10 +44,21 @@
   height: 100vh;
 }
 
-.message-receiver {
+.message-receiver-container {
   display: flex;
   margin-bottom: 10px;
   flex-direction: row;
   justify-content: flex-start;
   align-items: start;
+}
+
+.message-sender-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.message-sender {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }

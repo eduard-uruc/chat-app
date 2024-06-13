@@ -12,7 +12,7 @@ import axios from "axios"
 export const uploadMessage = createAsyncThunk(
   "chat/uploadMessage",
   async ({ message, file, from, to }, { rejectWithValue }) => {
-    const baseUrl = process.env.REACT_APP_API_URL
+    const baseUrl = import.meta.env.VITE_APP_API_URL
     const url = `${baseUrl}/upload`
 
     const formData = new FormData()

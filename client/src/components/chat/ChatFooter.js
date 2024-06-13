@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import debounce from "lodash/debounce"
+import isEmpty from "lodash/isEmpty"
 import SendIcon from "@mui/icons-material/Send"
 import AttachFileIcon from "@mui/icons-material/AttachFile"
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions"
@@ -67,19 +68,18 @@ const ChatFooter = () => {
       to: data?.name || data?.userName,
     }
 
+    let uploadedMessage = {}
     try {
-      const uploadedMessage = await dispatch(
-        uploadMessage(newMessageData)
-      ).unwrap()
+      uploadedMessage = await dispatch(uploadMessage(newMessageData)).unwrap()
 
       // Prepare the new message for socket emission
       const newMessage = {
-        message: uploadedMessage.message,
+        message: message,
         from: currentUser,
         to: data?.name || data?.userName,
         id: `${socket.id}${Math.random()}`,
         socketID: socket.id,
-        files: uploadedMessage.files,
+        files: !isEmpty(uploadedMessage) ? uploadedMessage.files : [],
       }
 
       // Emit the message through the socket
@@ -162,8 +162,8 @@ const ChatFooter = () => {
         <StyledInputMessageContainer marginTop={fileName ? 70 : 0}>
           {file && (
             <FilePreviewContainer>
-              {renderFileDisplay(file)}
-              <IconButton onClick={removeFile}>
+              {renderFileDisplay(file, null, "input")}
+              <IconButton onClick={removeFile} className="white">
                 <CloseIcon />
               </IconButton>
             </FilePreviewContainer>

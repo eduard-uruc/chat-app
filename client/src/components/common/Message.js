@@ -19,14 +19,8 @@ const Message = ({ message, isSender }) => {
   return (
     <StyledMessageChat key={message.id}>
       {isSender ? (
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
+        <div className="message-sender-container">
+          <div className="message-sender">
             <FileDisplay file={file} className="right" />
             <StyledMessageContent auto={true} theme={theme}>
               <StyledMessageText>{message.message}</StyledMessageText>
@@ -37,7 +31,7 @@ const Message = ({ message, isSender }) => {
           </div>
         </div>
       ) : (
-        <div className="message-receiver">
+        <div className="message-receiver-container">
           <StyledAvatar
             alt={`${message?.fromUser?.firstName} ${message?.fromUser?.lastName}`}
             src={null}
