@@ -111,7 +111,7 @@ const ChatPage = () => {
   const userDetails = { fullName: currentUser, avatar: "" }
 
   return (
-    <div class="grid-container">
+    <div className="grid-container">
       <StyledHeader theme={theme}>
         <StyledHeaderTitle theme={theme}>Chats</StyledHeaderTitle>
         <Settings

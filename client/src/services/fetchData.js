@@ -1,21 +1,23 @@
+import axios from "axios"
+
 const fetchData = async (endpoint, params = {}) => {
-  const queryString = new URLSearchParams(params).toString()
   const baseUrl = import.meta.env.VITE_APP_API_URL
-  const url = `${baseUrl}/${endpoint}${queryString ? `?${queryString}` : ""}`
+  const url = `${baseUrl}/${endpoint}`
 
   try {
-    const response = await fetch(url)
-    const data = await response.json()
-
-    if (response.ok) {
-      return data
+    const response = await axios.get(url, { params })
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error(`Failed to fetch ${endpoint}:`, error.response.data.error)
+      return []
+    } else if (error.request) {
+      console.error(`Error fetching ${endpoint}: No response received`)
+      return []
     } else {
-      console.error(`Failed to fetch ${endpoint}:`, data.error)
+      console.error(`Error fetching ${endpoint}:`, error.message)
       return []
     }
-  } catch (error) {
-    console.error(`Error fetching ${endpoint}:`, error)
-    return []
   }
 }
 
@@ -24,25 +26,23 @@ const updateData = async (endpoint, body = {}) => {
   const url = `${baseUrl}/${endpoint}`
 
   try {
-    const response = await fetch(url, {
-      method: "POST",
+    const response = await axios.post(url, body, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
     })
-
-    const data = await response.json()
-
-    if (response.ok) {
-      return data
-    } else {
-      console.error(`Failed to update ${endpoint}:`, data.error)
-      throw new Error(data.error || "Failed to update data")
-    }
+    return response.data
   } catch (error) {
-    console.error(`Error updating ${endpoint}:`, error)
-    throw error
+    if (error.response) {
+      console.error(`Failed to update ${endpoint}:`, error.response.data.error)
+      throw new Error(error.response.data.error || "Failed to update data")
+    } else if (error.request) {
+      console.error(`Error updating ${endpoint}: No response received`)
+      throw new Error("No response received")
+    } else {
+      console.error(`Error updating ${endpoint}:`, error.message)
+      throw new Error(error.message)
+    }
   }
 }
 
