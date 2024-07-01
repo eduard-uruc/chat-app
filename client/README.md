@@ -7,7 +7,7 @@ This README should include instructions specific to setting up and running the c
 Ensure you have the following installed on your system:
 
 - Node.js
-- npm (Node Package Manager)
+- npm
 
 ## Installation
 
@@ -24,12 +24,12 @@ Ensure you have the following installed on your system:
    npm install
    ```
 
-3. Create a `.env` file in the root directory of the client and copy the content from .env.example
+3. Create a `.env` file in the root directory of the client and copy the content from `.env.example`
 
 ### Running the Client
 
 To start the client, use the following command:
 
 ```bash
-npm start
+npm run dev
 ```
