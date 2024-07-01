@@ -4,6 +4,8 @@ const {
   getUserWithLastMessageAggregation,
 } = require("../utils/userAggregations")
 
+const { getMessageAggregation } = require("../utils/messageAggregations")
+
 const getChatHistory = async (req, res) => {
   const { user1, user2 } = req.query
 
@@ -12,43 +14,13 @@ const getChatHistory = async (req, res) => {
   }
 
   try {
-    const messages = await Message.find({
-      $or: [
-        { from: user1, to: user2 },
-        { from: user2, to: user1 },
-      ],
-    })
-      .sort("timestamp")
-      .populate("fromUser", "firstName lastName userName")
-      .populate("toUser", "firstName lastName userName")
-      .populate("files")
-      .exec()
+    const messages = await Message.aggregate(
+      getMessageAggregation(user1, user2)
+    )
 
-    const formattedMessages = messages.map((message) => ({
-      _id: message._id,
-      from: message.from,
-      to: message.to,
-      message: message.message,
-      timestamp: message.timestamp,
-      fromUser: {
-        userName: message.fromUser ? message.fromUser.userName : null,
-        firstName: message.fromUser ? message.fromUser.firstName : null,
-        lastName: message.fromUser ? message.fromUser.lastName : null,
-      },
-      toUser: {
-        userName: message.toUser ? message.toUser.userName : null,
-        firstName: message.toUser ? message.toUser.firstName : null,
-        lastName: message.toUser ? message.toUser.lastName : null,
-      },
-      files: message.files.map((file) => ({
-        url: file.url,
-        filename: file.filename,
-        type: file.type,
-        size: file.size,
-      })),
-    }))
+    console.log("messages", messages)
 
-    res.json(formattedMessages)
+    res.json(messages)
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch chat history" })
   }

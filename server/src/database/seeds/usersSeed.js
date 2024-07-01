@@ -6,8 +6,8 @@ const seedUsers = async () => {
   await connectDB()
 
   const users = [
-    { userName: "John", socketID: "123", online: true },
-    { userName: "Marie", socketID: "456", online: false },
+    { userName: "john", firstName: "John", lastName: "Doe", socketID: "123", online: true },
+    { userName: "marie", firstName: "Marie", lastName: "Doe", socketID: "456", online: false },
   ]
 
   await User.insertMany(users)
