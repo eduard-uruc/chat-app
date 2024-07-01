@@ -57,16 +57,17 @@ Ensure you have the following installed on your system:
          users
 
 6. To populate your database with initial data, you can run the provided seed files:
+   
    ```bash
    npm run seed
 
 
 ## Running the Server
-
    To start the server, use the following command:
-
-      ```bash
-      npm start
+        
+   ```bash
+   npm start
+   ```
 
 
 ## Login
